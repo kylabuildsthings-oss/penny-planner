@@ -109,7 +109,9 @@ export default function InputForm({
   const [showRates, setShowRates] = useState(false)
 
   return (
-    <section className={`input-section mx-auto w-full px-4 ${compact ? 'max-w-7xl' : 'max-w-5xl'}`}>
+    <section
+      className={`input-section mx-auto w-full px-4 ${compact ? 'max-w-7xl' : 'landing-form max-w-2xl'}`}
+    >
       <div className="money-grid">
         {MONEY_FIELDS.map((field) => (
           <MoneyField
@@ -161,7 +163,7 @@ export default function InputForm({
         </div>
       )}
 
-      <div className={`flex justify-center ${compact ? 'mt-2.5' : 'mt-3 md:mt-4'}`}>
+      <div className={`flex justify-center ${compact ? 'mt-2.5' : 'mt-auto pt-3'}`}>
         <button type="button" className="crack-btn" onClick={onCrack} disabled={thinking}>
           {sparkleKey > 0 &&
             SPARKLES.map((sparkle, index) => (

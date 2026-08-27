@@ -171,55 +171,9 @@ const TIPS = {
     'Use most leftover money to pay the card, and put a smaller slice into savings. You finish a bit later, but you have a cushion if something unexpected comes up.',
 }
 
-const PLAN_PREVIEWS = [
-  {
-    title: 'AVALANCHE',
-    text: 'Hit the expensive debt first so you pay less extra overall.',
-    wait: 'Your months and freedom date will land here.',
-    gradient: 'bg-gradient-to-br from-[#4A90D9] to-[#2E6BB0]',
-  },
-  {
-    title: 'SNOWBALL',
-    text: 'Clear the smallest balance first so you get a quick win.',
-    wait: 'Your months and freedom date will land here.',
-    gradient: 'bg-gradient-to-br from-[#66BB6A] to-[#2E7D32]',
-  },
-  {
-    title: 'SAFETY NET',
-    text: 'Pay the card, and keep a little savings for surprises.',
-    wait: 'Your months, savings, and freedom date will land here.',
-    gradient: 'bg-gradient-to-br from-[#FFB74D] to-[#F57C00]',
-  },
-]
-
 export default function ResultsCards({ results }) {
   if (!results) {
-    return (
-      <section className="landing-plans mx-auto flex w-full max-w-7xl flex-1 flex-col px-4 pb-6 pt-2">
-        <p className="mb-4 text-center">
-          <span className="pixel-text block text-[10px] leading-5 text-ink sm:text-xs">
-            Ready to see your future?
-          </span>
-          <span className="mt-1 block text-sm text-warm-brown">
-            Enter your numbers and crack the nut.
-          </span>
-        </p>
-        <div className="grid min-h-0 flex-1 gap-4 md:grid-cols-3 md:gap-5">
-          {PLAN_PREVIEWS.map((plan) => (
-            <article
-              key={plan.title}
-              className={`strategy-card preview-card flex flex-col justify-between p-5 text-white md:p-6 ${plan.gradient}`}
-            >
-              <div>
-                <h3 className="pixel-text text-[11px] leading-5">{plan.title}</h3>
-                <p className="mt-4 text-[0.95rem] leading-6 text-white/90">{plan.text}</p>
-              </div>
-              <p className="mt-8 text-sm italic text-white/80">{plan.wait}</p>
-            </article>
-          ))}
-        </div>
-      </section>
-    )
+    return null
   }
 
   if (results.kind === 'empty') {

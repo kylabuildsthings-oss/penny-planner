@@ -18,10 +18,10 @@ export default function App() {
     sparkleKey,
   } = useDebtCalculator()
 
-  const compactLayout = thinking || Boolean(results)
+  const compactLayout = Boolean(results) && !thinking
 
   return (
-    <div className={`flex min-h-dvh flex-col ${compactLayout ? 'has-results' : ''}`}>
+    <div className={`flex min-h-dvh flex-1 flex-col ${compactLayout ? 'has-results' : ''}`}>
       <Header mood={mood} speech={speech} progress={progress} />
       <main className={`flex flex-1 flex-col ${compactLayout ? '' : 'landing-main'}`}>
         <InputForm
@@ -33,7 +33,7 @@ export default function App() {
           sparkleKey={sparkleKey}
           compact={compactLayout}
         />
-        <ResultsCards results={thinking ? null : results} />
+        {compactLayout ? <ResultsCards results={results} /> : null}
       </main>
       <Footer />
     </div>
