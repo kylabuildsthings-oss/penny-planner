@@ -9,6 +9,7 @@ export default function App() {
     inputs,
     updateInput,
     crackTheNut,
+    goHome,
     mood,
     speech,
     cracked,
@@ -18,12 +19,20 @@ export default function App() {
   } = useDebtCalculator()
 
   const compactLayout = Boolean(results) && !thinking
+  const canGoHome = Boolean(results) || thinking
 
   return (
     <div className={`flex min-h-dvh flex-1 flex-col ${compactLayout ? 'has-results' : ''}`}>
-      <Header mood={mood} speech={speech} thinking={thinking} sparkleKey={sparkleKey} />
+      <Header
+        mood={mood}
+        speech={speech}
+        thinking={thinking}
+        sparkleKey={sparkleKey}
+        onHome={canGoHome ? goHome : undefined}
+      />
       <main className={`flex flex-1 flex-col ${compactLayout ? '' : 'landing-main'}`}>
         <InputForm
+          key={results || thinking ? 'plans' : 'home'}
           inputs={inputs}
           onChange={updateInput}
           onCrack={crackTheNut}

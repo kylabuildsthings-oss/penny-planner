@@ -469,6 +469,25 @@ body {
   pointer-events: none;
 }
 
+.penny-home {
+  display: block;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+}
+
+.penny-home:hover .penny-sprite,
+.penny-home:focus-visible .penny-sprite {
+  filter: drop-shadow(0 6px 10px rgba(93, 64, 55, 0.22)) brightness(1.06);
+}
+
+.penny-home:focus-visible {
+  outline: 3px solid #5d4037;
+  outline-offset: 4px;
+  border-radius: 12px;
+}
+
 .penny-sprite {
   height: var(--penny-h);
   object-fit: contain;

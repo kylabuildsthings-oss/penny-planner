@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from 'react'
+import { useCallback, useMemo, useRef, useState } from 'react'
 import { calculateFreedomDate } from '../utils/calculateFreedomDate.js'
 
 export const DEFAULT_CC_APR = 0.22
@@ -306,8 +306,14 @@ export function useDebtCalculator() {
   const [thinking, setThinking] = useState(false)
   const [results, setResults] = useState(null)
   const [sparkleKey, setSparkleKey] = useState(0)
+  const timersRef = useRef([])
 
   const progress = results?.progress ?? 0
+
+  function clearTimers() {
+    timersRef.current.forEach((id) => window.clearTimeout(id))
+    timersRef.current = []
+  }
 
   const speech = useMemo(() => {
     if (mood === 'thinking') return '????'
@@ -320,6 +326,7 @@ export function useDebtCalculator() {
   }, [])
 
   const crackTheNut = useCallback(() => {
+    clearTimers()
     setCracked(true)
     setThinking(true)
     setMood('thinking')
@@ -327,23 +334,35 @@ export function useDebtCalculator() {
 
     const outcome = calculateStrategies(inputs)
 
-    window.setTimeout(() => setCracked(false), 700)
+    timersRef.current.push(window.setTimeout(() => setCracked(false), 700))
 
-    window.setTimeout(() => {
-      setThinking(false)
-      setResults(outcome)
-      if (outcome.kind === 'debtFree') {
-        setMood('dancing')
-      } else {
-        setMood('happy')
-      }
-    }, THINK_MS)
+    timersRef.current.push(
+      window.setTimeout(() => {
+        setThinking(false)
+        setResults(outcome)
+        if (outcome.kind === 'debtFree') {
+          setMood('dancing')
+        } else {
+          setMood('happy')
+        }
+      }, THINK_MS),
+    )
   }, [inputs])
+
+  const goHome = useCallback(() => {
+    clearTimers()
+    setInputs(EMPTY_INPUTS)
+    setMood('happy')
+    setCracked(false)
+    setThinking(false)
+    setResults(null)
+  }, [])
 
   return {
     inputs,
     updateInput,
     crackTheNut,
+    goHome,
     mood,
     speech,
     cracked,
