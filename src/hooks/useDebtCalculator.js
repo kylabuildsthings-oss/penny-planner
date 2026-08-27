@@ -223,12 +223,16 @@ function buildJourney(run, startDebt) {
 }
 
 function packStrategy(run, stoppedRun = run, startDebt = 0) {
+  const at12 = run.snapshot
+  const paidOff = run.paidOff
   return {
-    months: run.paidOff ? run.months : null,
-    paidOff: run.paidOff,
-    interestPaid: run.interestPaid,
+    months: paidOff ? run.months : null,
+    paidOff,
+    interestPaid: paidOff ? run.interestPaid : (at12?.interestPaid ?? run.interestPaid),
+    remaining: at12?.remaining ?? run.remaining,
+    savings: at12?.savings ?? run.savings,
     firstMonth: run.firstMonth,
-    freedomDate: calculateFreedomDate(run.paidOff ? run.months : NaN),
+    freedomDate: calculateFreedomDate(paidOff ? run.months : NaN),
     stoppedMonths: stoppedRun.paidOff ? stoppedRun.months : null,
     stoppedPaidOff: stoppedRun.paidOff,
     journey: buildJourney(run, startDebt),
@@ -324,11 +328,7 @@ export function calculateStrategies(rawInputs) {
     },
     avalanche: packStrategy(avalancheRun, avalanchePair.stopped, totalDebt),
     snowball: packStrategy(snowballRun, snowballPair.stopped, totalDebt),
-    safetyNet: {
-      ...packStrategy(safetyRun, safetyPair.stopped, totalDebt),
-      remaining: safetyRun.snapshot?.remaining ?? safetyRun.remaining,
-      savings: safetyRun.snapshot?.savings ?? safetyRun.savings,
-    },
+    safetyNet: packStrategy(safetyRun, safetyPair.stopped, totalDebt),
     ccSpending,
   }
 }

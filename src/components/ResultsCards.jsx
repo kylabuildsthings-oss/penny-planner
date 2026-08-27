@@ -20,11 +20,32 @@ function monthsNumber(months, paidOff) {
   return String(months)
 }
 
-function interestPhrase(amount) {
+function interestPhrase(amount, paidOff = true) {
   if (!Number.isFinite(amount) || amount < 1) {
     return 'Almost nothing extra — you are clearing this so quickly.'
   }
+  if (!paidOff) {
+    return `About ${formatCurrency(amount)} extra the lender adds in the first 12 months.`
+  }
   return `About ${formatCurrency(amount)} extra the lender adds while you pay.`
+}
+
+function TwelveMonthNote({ plan, withSavings = false }) {
+  if (plan.paidOff && plan.months != null && plan.months < 12) {
+    if (!withSavings || !(plan.savings > 0)) return null
+    return (
+      <p className="text-[0.95rem] leading-6 text-white/90">
+        You&apos;ll also have about {formatCurrency(plan.savings)} saved along the way.
+      </p>
+    )
+  }
+
+  return (
+    <p className="text-[0.95rem] leading-6 text-white/90">
+      After 12 months: {formatCurrency(plan.remaining)} debt left
+      {withSavings ? `, ${formatCurrency(plan.savings)} saved` : ''}.
+    </p>
+  )
 }
 
 function HowTo({ steps }) {
@@ -275,7 +296,10 @@ export default function ResultsCards({ results }) {
             <p className="text-[0.95rem] font-semibold text-white">How to do it</p>
             <HowTo steps={avalancheSteps(results)} />
           </div>
-          <p className="text-[0.95rem] leading-6 text-white/90">{interestPhrase(avalanche.interestPaid)}</p>
+          <TwelveMonthNote plan={avalanche} />
+          <p className="text-[0.95rem] leading-6 text-white/90">
+            {interestPhrase(avalanche.interestPaid, avalanche.paidOff)}
+          </p>
         </StrategyCard>
 
         <StrategyCard
@@ -297,7 +321,10 @@ export default function ResultsCards({ results }) {
             <p className="text-[0.95rem] font-semibold text-white">How to do it</p>
             <HowTo steps={snowballSteps(results)} />
           </div>
-          <p className="text-[0.95rem] leading-6 text-white/90">{interestPhrase(snowball.interestPaid)}</p>
+          <TwelveMonthNote plan={snowball} />
+          <p className="text-[0.95rem] leading-6 text-white/90">
+            {interestPhrase(snowball.interestPaid, snowball.paidOff)}
+          </p>
         </StrategyCard>
 
         <StrategyCard
@@ -319,17 +346,10 @@ export default function ResultsCards({ results }) {
             <p className="text-[0.95rem] font-semibold text-white">How to do it</p>
             <HowTo steps={safetySteps(results)} />
           </div>
-          {safetyNet.paidOff && safetyNet.months != null && safetyNet.months < 12 ? (
-            <p className="text-[0.95rem] leading-6 text-white/90">
-              You&apos;ll also have about {formatCurrency(safetyNet.savings)} saved along the way.
-            </p>
-          ) : (
-            <p className="text-[0.95rem] leading-6 text-white/90">
-              After 12 months: {formatCurrency(safetyNet.remaining)} debt left,{' '}
-              {formatCurrency(safetyNet.savings)} saved.
-            </p>
-          )}
-          <p className="text-[0.95rem] leading-6 text-white/90">{interestPhrase(safetyNet.interestPaid)}</p>
+          <TwelveMonthNote plan={safetyNet} withSavings />
+          <p className="text-[0.95rem] leading-6 text-white/90">
+            {interestPhrase(safetyNet.interestPaid, safetyNet.paidOff)}
+          </p>
         </StrategyCard>
       </div>
 
