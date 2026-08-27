@@ -54,19 +54,20 @@ body {
   border: 3px solid #5d4037;
   border-radius: 12px;
   image-rendering: pixelated;
+  flex-shrink: 0;
 }
 
 .speech-bubble::after {
   content: "";
   position: absolute;
-  left: 18px;
-  bottom: -10px;
-  width: 14px;
-  height: 10px;
+  left: -9px;
+  top: 14px;
+  width: 12px;
+  height: 12px;
   background: #fff;
-  border-right: 3px solid #5d4037;
+  border-left: 3px solid #5d4037;
   border-bottom: 3px solid #5d4037;
-  transform: skewX(-32deg);
+  transform: rotate(45deg);
 }
 
 .progress-track {
