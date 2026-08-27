@@ -56,6 +56,7 @@ function simulate({
   extraMoney,
   ccApr,
   otherApr,
+  ccSpending = 0,
   allocateExtra,
   stopAfter = MAX_MONTHS,
   snapshotAt = null,
@@ -68,7 +69,7 @@ function simulate({
   let snapshot = null
   let firstMonth = null
 
-  if (cc <= EPS && other <= EPS) {
+  if (cc <= EPS && other <= EPS && ccSpending <= EPS) {
     return {
       months: 0,
       interestPaid: 0,
@@ -81,9 +82,10 @@ function simulate({
   }
 
   while (months < stopAfter) {
-    if (cc <= EPS && other <= EPS) break
+    if (cc <= EPS && other <= EPS && (months > 0 || ccSpending <= EPS)) break
 
     months += 1
+    cc += ccSpending
     const ccInterest = cc * (ccApr / 12)
     const otherInterest = other * (otherApr / 12)
     cc += ccInterest
@@ -180,26 +182,37 @@ function remainingAfterMonths(result, months) {
   return result.remaining
 }
 
-function packStrategy(run) {
+function packStrategy(run, stoppedRun = run) {
   return {
     months: run.paidOff ? run.months : null,
     paidOff: run.paidOff,
     interestPaid: run.interestPaid,
     firstMonth: run.firstMonth,
     freedomDate: calculateFreedomDate(run.paidOff ? run.months : NaN),
+    stoppedMonths: stoppedRun.paidOff ? stoppedRun.months : null,
+    stoppedPaidOff: stoppedRun.paidOff,
   }
+}
+
+function runStrategy(base, allocateExtra) {
+  const stopped = simulate({ ...base, ccSpending: 0, allocateExtra })
+  const realistic =
+    base.ccSpending > EPS ? simulate({ ...base, allocateExtra }) : stopped
+  return { realistic, stopped }
 }
 
 export function calculateStrategies(rawInputs) {
   const salary = asMoney(rawInputs.salary)
   const ccDebt = asMoney(rawInputs.ccDebt)
+  const ccSpending = asMoney(rawInputs.ccSpending)
   const otherDebt = asMoney(rawInputs.otherDebt)
   const expenses = asMoney(rawInputs.expenses)
   const ccApr = asApr(rawInputs.ccApr, DEFAULT_CC_APR)
   const otherApr = asApr(rawInputs.otherApr, DEFAULT_OTHER_APR)
   const extraMoney = salary - expenses
   const totalDebt = ccDebt + otherDebt
-  const allZero = salary === 0 && ccDebt === 0 && otherDebt === 0 && expenses === 0
+  const allZero =
+    salary === 0 && ccDebt === 0 && ccSpending === 0 && otherDebt === 0 && expenses === 0
 
   if (allZero) {
     return {
@@ -210,7 +223,7 @@ export function calculateStrategies(rawInputs) {
     }
   }
 
-  if (totalDebt <= EPS) {
+  if (totalDebt <= EPS && ccSpending <= EPS) {
     return {
       kind: 'debtFree',
       extraMoney,
@@ -225,38 +238,26 @@ export function calculateStrategies(rawInputs) {
   const otherMinimum = minPay(otherDebt)
   const smallerBalance = otherDebt > 0 && (ccDebt <= 0 || otherDebt < ccDebt) ? 'other' : 'card'
 
-  const avalancheRun = simulate({
+  const simBase = {
     ccDebt,
     otherDebt,
     extraMoney: spendable,
     ccApr,
     otherApr,
-    allocateExtra: avalancheExtra,
+    ccSpending,
     snapshotAt: SAFETY_NET_MONTHS,
-  })
+  }
 
-  const snowballRun = simulate({
-    ccDebt,
-    otherDebt,
-    extraMoney: spendable,
-    ccApr,
-    otherApr,
-    allocateExtra: snowballExtra,
-    snapshotAt: SAFETY_NET_MONTHS,
-  })
-
-  const safetyRun = simulate({
-    ccDebt,
-    otherDebt,
-    extraMoney: spendable,
-    ccApr,
-    otherApr,
-    allocateExtra: safetyNetExtra,
-    snapshotAt: SAFETY_NET_MONTHS,
-  })
+  const avalanchePair = runStrategy(simBase, avalancheExtra)
+  const snowballPair = runStrategy(simBase, snowballExtra)
+  const safetyPair = runStrategy(simBase, safetyNetExtra)
+  const avalancheRun = avalanchePair.realistic
+  const snowballRun = snowballPair.realistic
+  const safetyRun = safetyPair.realistic
 
   const remainingAt12 = remainingAfterMonths(avalancheRun, SAFETY_NET_MONTHS)
-  const projected = ((totalDebt - remainingAt12) / totalDebt) * 100
+  const projected =
+    totalDebt > EPS ? ((totalDebt - remainingAt12) / totalDebt) * 100 : 0
   const progress = Math.round(Math.max(0, Math.min(95, projected)))
 
   return {
@@ -280,19 +281,21 @@ export function calculateStrategies(rawInputs) {
       otherMinimum,
       smallerBalance,
     },
-    avalanche: packStrategy(avalancheRun),
-    snowball: packStrategy(snowballRun),
+    avalanche: packStrategy(avalancheRun, avalanchePair.stopped),
+    snowball: packStrategy(snowballRun, snowballPair.stopped),
     safetyNet: {
-      ...packStrategy(safetyRun),
+      ...packStrategy(safetyRun, safetyPair.stopped),
       remaining: safetyRun.snapshot?.remaining ?? safetyRun.remaining,
       savings: safetyRun.snapshot?.savings ?? safetyRun.savings,
     },
+    ccSpending,
   }
 }
 
 const EMPTY_INPUTS = {
   salary: '',
   ccDebt: '',
+  ccSpending: '',
   otherDebt: '',
   expenses: '',
   ccApr: '',

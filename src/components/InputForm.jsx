@@ -14,6 +14,12 @@ const MONEY_FIELDS = [
     hint: 'total balance',
   },
   {
+    id: 'ccSpending',
+    icon: '💳',
+    label: 'Additional Card Spending',
+    hint: 'additional spending on your credit card',
+  },
+  {
     id: 'otherDebt',
     icon: '📊',
     label: 'Other Debts',
@@ -23,7 +29,7 @@ const MONEY_FIELDS = [
     id: 'expenses',
     icon: '🏠',
     label: 'Living Costs',
-    hint: 'rent, food, bills, transport',
+    hint: 'rent, food, bills, transport, subscriptions',
   },
 ]
 

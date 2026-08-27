@@ -36,13 +36,19 @@ function HowTo({ steps }) {
   )
 }
 
-function MonthsBlock({ months, paidOff }) {
+function MonthsBlock({ months, paidOff, stoppedMonths, stoppedPaidOff, showStoppedNote }) {
   return (
     <div className="text-center">
       <p className="pixel-text text-4xl leading-none">{monthsNumber(months, paidOff)}</p>
       <p className="mt-2 text-sm text-white/90">
         Debt-free in {monthsPhrase(months, paidOff)}
       </p>
+      {showStoppedNote && stoppedPaidOff ? (
+        <p className="mt-3 text-sm leading-6 text-white/90">
+          If you stopped additional spending, you&apos;d be free in{' '}
+          {monthsPhrase(stoppedMonths, stoppedPaidOff)}
+        </p>
+      ) : null}
     </div>
   )
 }
@@ -53,6 +59,9 @@ function StrategyCard({
   description,
   months,
   paidOff,
+  stoppedMonths,
+  stoppedPaidOff,
+  showStoppedNote,
   freedomDate,
   message,
   gradient,
@@ -101,7 +110,13 @@ function StrategyCard({
           </div>
           <div className="mt-4 flex-1 space-y-3">{children}</div>
           <div className="mt-auto border-t border-white/25 pt-5 text-center">
-            <MonthsBlock months={months} paidOff={paidOff} />
+            <MonthsBlock
+              months={months}
+              paidOff={paidOff}
+              stoppedMonths={stoppedMonths}
+              stoppedPaidOff={stoppedPaidOff}
+              showStoppedNote={showStoppedNote}
+            />
             <p className="freedom-date mt-3 text-base text-white">
               Freedom date: {freedomDate}
             </p>
@@ -201,7 +216,9 @@ export default function ResultsCards({ results }) {
     )
   }
 
-  const { avalanche, snowball, safetyNet, warning, extraMoney, spendable, rates } = results
+  const { avalanche, snowball, safetyNet, warning, extraMoney, spendable, rates, ccSpending } =
+    results
+  const showStoppedNote = ccSpending > 0
 
   return (
     <section className="mx-auto w-full max-w-7xl px-4 pb-8 md:pb-10" aria-live="polite">
@@ -218,7 +235,7 @@ export default function ResultsCards({ results }) {
             {formatCurrency(spendable)}
           </p>
           <p className="mx-auto mt-5 max-w-2xl text-lg leading-8 text-ink md:text-xl">
-            After rent, food and bills, this is what you can put toward debt this month.
+            After rent, food, bills and subscriptions, this is what you can put toward debt this month.
           </p>
           <p className="mx-auto mt-3 max-w-2xl text-base leading-7 text-warm-brown">
             We took your income and subtracted living costs. That leftover is the pot each plan
@@ -240,6 +257,9 @@ export default function ResultsCards({ results }) {
           description={`Hit the expensive debt first — your credit card at ${percentLabel(rates.ccPercent)}.`}
           months={avalanche.months}
           paidOff={avalanche.paidOff}
+          stoppedMonths={avalanche.stoppedMonths}
+          stoppedPaidOff={avalanche.stoppedPaidOff}
+          showStoppedNote={showStoppedNote}
           freedomDate={avalanche.freedomDate.label}
           message="You're closer than you think!"
           gradient="bg-gradient-to-br from-[#4A90D9] to-[#2E6BB0]"
@@ -258,6 +278,9 @@ export default function ResultsCards({ results }) {
           description="Clear the smallest balance first so you get a win on the fridge."
           months={snowball.months}
           paidOff={snowball.paidOff}
+          stoppedMonths={snowball.stoppedMonths}
+          stoppedPaidOff={snowball.stoppedPaidOff}
+          showStoppedNote={showStoppedNote}
           freedomDate={snowball.freedomDate.label}
           message="Small wins lead to big victories!"
           gradient="bg-gradient-to-br from-[#66BB6A] to-[#2E7D32]"
@@ -276,6 +299,9 @@ export default function ResultsCards({ results }) {
           description="Pay the card, and keep a little savings so a surprise bill does not knock you back."
           months={safetyNet.months}
           paidOff={safetyNet.paidOff}
+          stoppedMonths={safetyNet.stoppedMonths}
+          stoppedPaidOff={safetyNet.stoppedPaidOff}
+          showStoppedNote={showStoppedNote}
           freedomDate={safetyNet.freedomDate.label}
           message="Smart planning pays off!"
           gradient="bg-gradient-to-br from-[#FFB74D] to-[#F57C00]"
