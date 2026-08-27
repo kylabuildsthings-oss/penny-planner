@@ -12,19 +12,17 @@ export default function Header({ mood = 'happy', speech, progress = 0 }) {
     <header className="header-banner relative overflow-hidden rounded-b-3xl border-b-4 border-[#c47a32]">
       <div className="header-inner mx-auto flex max-w-7xl flex-col items-center gap-4 px-5 sm:flex-row sm:items-end sm:gap-8 sm:px-8">
         <div className="grid grid-cols-[auto_auto] items-start gap-x-3">
-          <div className="relative col-start-1 row-start-1">
-            <img
-              src={`${sprite.src}?v=2`}
-              alt={sprite.alt}
-              className={`penny-sprite penny-${mood} w-auto`}
-            />
-            <span className="absolute bottom-1 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-full border-2 border-[#5d4037] bg-[#fff8f0] px-3 py-1 pixel-text text-[8px] text-ink">
-              {sprite.label}
-            </span>
-          </div>
+          <img
+            src={`${sprite.src}?v=2`}
+            alt={sprite.alt}
+            className={`penny-sprite penny-${mood} col-start-1 row-start-1 w-auto`}
+          />
           <div className="speech-bubble col-start-2 row-start-1 mt-6 max-w-[11rem] px-3 py-2 text-center sm:mt-8 md:mt-10">
             <p className="pixel-text text-[10px] leading-4 text-ink">{speech}</p>
           </div>
+          <span className="col-start-1 row-start-2 mt-2 justify-self-center whitespace-nowrap rounded-full border-2 border-[#5d4037] bg-[#fff8f0] px-3 py-1 pixel-text text-[8px] text-ink">
+            {sprite.label}
+          </span>
         </div>
 
         <div className="flex w-full flex-1 flex-col items-center text-center sm:items-start sm:pb-2 sm:text-left">
