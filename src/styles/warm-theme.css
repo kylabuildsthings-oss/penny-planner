@@ -119,7 +119,7 @@ body {
   grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
-@media (min-width: 1024px) {
+@media (min-width: 720px) {
   .has-results .money-grid {
     grid-template-columns: repeat(4, minmax(0, 1fr));
   }
@@ -232,7 +232,9 @@ body {
 }
 
 .has-results .crack-btn {
-  min-width: min(100%, 22rem);
+  min-width: min(100%, 18rem);
+  gap: 0.45rem;
+  font-size: clamp(0.55rem, 1.6vw, 0.72rem);
 }
 
 .has-results .nut-icon {
@@ -252,7 +254,7 @@ body {
   position: relative;
   overflow: visible;
   border: 3px solid rgba(93, 64, 55, 0.25);
-  border-radius: 12px;
+  border-radius: 16px;
   box-shadow: 0 12px 28px rgba(93, 64, 55, 0.16);
   animation: card-in 500ms ease both;
 }

@@ -109,7 +109,7 @@ export default function InputForm({
   const [showRates, setShowRates] = useState(false)
 
   return (
-    <section className={`input-section mx-auto w-full px-4 ${compact ? 'max-w-5xl' : 'max-w-3xl'}`}>
+    <section className={`input-section mx-auto w-full px-4 ${compact ? 'max-w-7xl' : 'max-w-3xl'}`}>
       <div className="money-grid">
         {MONEY_FIELDS.map((field) => (
           <MoneyField

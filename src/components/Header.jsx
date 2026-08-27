@@ -10,7 +10,7 @@ export default function Header({ mood = 'happy', speech, progress = 0 }) {
 
   return (
     <header className="header-banner relative overflow-hidden rounded-b-3xl border-b-4 border-[#c47a32]">
-      <div className="header-inner mx-auto flex max-w-5xl flex-col items-center gap-2 px-4 sm:flex-row sm:items-end sm:gap-5 sm:px-6">
+      <div className="header-inner mx-auto flex max-w-7xl flex-col items-center gap-2 px-4 sm:flex-row sm:items-end sm:gap-5 sm:px-6">
         <div className="grid grid-cols-[auto_auto] items-start gap-x-2">
           <div className="relative col-start-1 row-start-1">
             <img
