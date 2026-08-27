@@ -36,30 +36,6 @@ function HowTo({ steps }) {
   )
 }
 
-function InfoTip({ label, text }) {
-  const [open, setOpen] = useState(false)
-  const tipId = `${label.toLowerCase().replace(/\s+/g, '-')}-tip`
-
-  return (
-    <span className={`info-tip ${open ? 'is-open' : ''}`}>
-      <button
-        type="button"
-        className="info-tip-btn"
-        aria-label={`About ${label}`}
-        aria-expanded={open}
-        aria-describedby={tipId}
-        onClick={() => setOpen((value) => !value)}
-        onBlur={() => setOpen(false)}
-      >
-        i
-      </button>
-      <span id={tipId} role="tooltip" className="info-tip-panel">
-        {text}
-      </span>
-    </span>
-  )
-}
-
 function MonthsBlock({ months, paidOff }) {
   return (
     <div className="text-center">
@@ -83,29 +59,59 @@ function StrategyCard({
   delay,
   children,
 }) {
+  const [flipped, setFlipped] = useState(false)
+  const cardId = `${title.toLowerCase().replace(/\s+/g, '-')}-plan`
+
+  function toggle() {
+    setFlipped((value) => !value)
+  }
+
   return (
-    <article
-      className={`strategy-card p-5 text-white md:p-6 ${gradient}`}
-      style={{ animationDelay: delay }}
-    >
-      <div className="flex flex-col gap-5 md:flex-row md:items-stretch md:gap-6 xl:flex-col">
-        <div className="min-w-0 flex-1">
-          <div className="flex items-center justify-between gap-3">
-            <h3 className="pixel-text text-[11px] leading-5">{title}</h3>
-            <InfoTip label={title} text={info} />
+    <div className={`flip-card ${flipped ? 'is-flipped' : ''}`} style={{ animationDelay: delay }}>
+      <div className="flip-card-inner">
+        <article
+          className={`flip-face flip-front strategy-card flex h-full flex-col p-6 text-white md:p-7 ${gradient}`}
+          aria-labelledby={cardId}
+          aria-hidden={flipped}
+        >
+          <h3 id={cardId} className="pixel-text text-[11px] leading-5">
+            {title}
+          </h3>
+          <p className="mt-4 text-lg font-semibold leading-7 text-white">{description}</p>
+          <p className="mt-4 text-[1.02rem] leading-7 text-white/95">{info}</p>
+          <button
+            type="button"
+            className="flip-toggle"
+            onClick={toggle}
+            aria-expanded={flipped}
+          >
+            See how to do it
+          </button>
+        </article>
+
+        <article
+          className={`flip-face flip-back strategy-card p-6 text-white md:p-7 ${gradient}`}
+          aria-hidden={!flipped}
+        >
+          <div className="flex h-full flex-col">
+            <div className="flex items-center justify-between gap-3">
+              <h3 className="pixel-text text-[11px] leading-5">{title}</h3>
+              <button type="button" className="flip-toggle flip-toggle-back" onClick={toggle}>
+                What this plan is
+              </button>
+            </div>
+            <div className="mt-4 space-y-3">{children}</div>
+            <div className="mt-auto border-t border-white/25 pt-5 text-center">
+              <MonthsBlock months={months} paidOff={paidOff} />
+              <p className="freedom-date mt-3 text-base text-white">
+                Freedom date: {freedomDate}
+              </p>
+              <p className="mt-3 text-sm italic text-white/95">{message}</p>
+            </div>
           </div>
-          <p className="mt-3 text-[0.95rem] leading-6 text-white/90">{description}</p>
-          <div className="mt-4 space-y-3">{children}</div>
-        </div>
-        <div className="shrink-0 border-t border-white/25 pt-4 text-center md:flex md:w-48 md:flex-col md:justify-center md:border-l md:border-t-0 md:pl-5 md:pt-0 xl:w-auto xl:border-l-0 xl:border-t xl:pl-0 xl:pt-5">
-          <MonthsBlock months={months} paidOff={paidOff} />
-          <p className="freedom-date mt-3 text-base text-white">
-            Freedom date: {freedomDate}
-          </p>
-          <p className="mt-3 text-sm italic text-white/95">{message}</p>
-        </div>
+        </article>
       </div>
-    </article>
+    </div>
   )
 }
 
@@ -208,16 +214,23 @@ export default function ResultsCards({ results }) {
       )}
 
       {extraMoney >= 0 && (
-        <div className="mb-5 rounded-xl border-2 border-border-warm bg-white/80 px-5 py-4 text-center">
-          <p className="text-ink">
-            After living costs you have <strong>{formatCurrency(spendable)}</strong> left
-            for debt this month.
+        <div className="leftover-banner mb-6 rounded-2xl border-2 border-border-warm bg-white/90 px-6 py-8 text-center shadow-sm md:px-10 md:py-10">
+          <p className="pixel-text text-[10px] leading-5 text-warm-brown">This month&apos;s leftover</p>
+          <p className="pixel-text mt-3 text-[clamp(1.7rem,4.8vw,2.8rem)] leading-tight text-ink">
+            {formatCurrency(spendable)}
           </p>
-          <p className="mt-2 text-sm text-warm-brown">
-            Pick a plan below. Each one is a simple to-do list — not a spreadsheet.
+          <p className="mx-auto mt-5 max-w-2xl text-lg leading-8 text-ink md:text-xl">
+            After rent, food and bills, this is what you can put toward debt this month.
+          </p>
+          <p className="mx-auto mt-3 max-w-2xl text-base leading-7 text-warm-brown">
+            We took your income and subtracted living costs. That leftover is the pot each plan
+            below uses — they just spend it in different ways.
             {!rates.ccCustom && !rates.otherCustom
-              ? ` We used typical rates (${percentLabel(rates.ccPercent)} card, ${percentLabel(rates.otherPercent)} other).`
+              ? ` We used typical UK rates (${percentLabel(rates.ccPercent)} card, ${percentLabel(rates.otherPercent)} other).`
               : ''}
+          </p>
+          <p className="mt-5 text-sm font-medium text-ink">
+            Tap a plan to see how to do it, how long it takes, and your freedom date.
           </p>
         </div>
       )}

@@ -270,11 +270,84 @@ body {
 
 .strategy-card {
   position: relative;
-  overflow: visible;
+  overflow: hidden;
   border: 3px solid rgba(93, 64, 55, 0.25);
   border-radius: 16px;
   box-shadow: 0 12px 28px rgba(93, 64, 55, 0.16);
+}
+
+.flip-card {
+  perspective: 1400px;
   animation: card-in 500ms ease both;
+}
+
+.flip-card-inner {
+  display: grid;
+  transform-style: preserve-3d;
+  transition: transform 620ms ease;
+}
+
+.flip-card.is-flipped .flip-card-inner {
+  transform: rotateY(180deg);
+}
+
+.flip-face {
+  grid-area: 1 / 1;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+.flip-front {
+  z-index: 1;
+}
+
+.flip-back {
+  transform: rotateY(180deg);
+}
+
+.flip-card:not(.is-flipped) .flip-back,
+.flip-card.is-flipped .flip-front {
+  pointer-events: none;
+}
+
+.flip-toggle {
+  display: inline-flex;
+  margin-top: auto;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding: 0.7rem 1rem;
+  border: 2px solid rgba(255, 255, 255, 0.85);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.16);
+  color: #fff;
+  font-family: var(--font-sans);
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.flip-toggle:hover,
+.flip-toggle:focus-visible {
+  background: rgba(255, 255, 255, 0.28);
+  outline: none;
+}
+
+.flip-toggle-back {
+  width: auto;
+  margin-top: 0;
+  padding: 0.4rem 0.8rem;
+  font-size: 0.8rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .flip-card-inner {
+    transition: none;
+  }
+}
+
+.leftover-banner {
+  box-shadow: 0 10px 28px rgba(232, 115, 42, 0.12);
 }
 
 .info-tip {
