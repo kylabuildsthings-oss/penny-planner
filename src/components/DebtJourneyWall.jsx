@@ -15,7 +15,7 @@ const ROW_PATTERNS = [
 ]
 
 function visibleRowCount(remaining, startDebt, free) {
-  if (free) return 2
+  if (free) return 1
   if (!(startDebt > 0) || remaining <= 0) return 1
   const ratio = remaining / startDebt
   if (ratio >= 0.85) return 4
@@ -25,17 +25,17 @@ function visibleRowCount(remaining, startDebt, free) {
 }
 
 function brickTones(count, remaining, startDebt, free) {
-  if (free) return Array.from({ length: count }, () => 'green')
+  if (free) return Array.from({ length: count }, () => 'free')
   if (!(startDebt > 0) || remaining <= 0) {
-    return Array.from({ length: count }, () => 'gold')
+    return Array.from({ length: count }, () => 'paid')
   }
   if (remaining >= startDebt * 0.98) {
-    return Array.from({ length: count }, () => 'red')
+    return Array.from({ length: count }, () => 'owing')
   }
-  const gold = Math.max(1, Math.min(count, Math.round((1 - remaining / startDebt) * count)))
+  const paid = Math.max(1, Math.min(count, Math.round((1 - remaining / startDebt) * count)))
   return [
-    ...Array.from({ length: count - gold }, () => 'red'),
-    ...Array.from({ length: gold }, () => 'gold'),
+    ...Array.from({ length: count - paid }, () => 'owing'),
+    ...Array.from({ length: paid }, () => 'paid'),
   ]
 }
 
@@ -107,6 +107,23 @@ export default function DebtJourneyWall({ avalanche, snowball, safetyNet, startD
       <h2 id="journey-wall-title" className="pixel-text journey-title">
         Debt Journey Wall
       </h2>
+      <p className="journey-guide">
+        Each wall is the debt still left at that point. Taller means more still to pay.
+      </p>
+      <ul className="journey-key">
+        <li>
+          <span className="journey-brick journey-brick-owing" aria-hidden="true" />
+          Orange = still owing
+        </li>
+        <li>
+          <span className="journey-brick journey-brick-paid" aria-hidden="true" />
+          Gold = already paid
+        </li>
+        <li>
+          <span className="journey-brick journey-brick-free" aria-hidden="true" />
+          Green = debt-free
+        </li>
+      </ul>
 
       <div className="journey-toggle" role="radiogroup" aria-label="Choose a plan for the wall">
         {STRATEGIES.map((option) => (

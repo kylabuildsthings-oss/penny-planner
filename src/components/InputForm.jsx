@@ -47,14 +47,14 @@ const SPARKLES = [
 function MoneyField({ field, value, onChange, compact }) {
   return (
     <label className="input-card" htmlFor={field.id}>
-      <span className="mb-1 flex items-center gap-2 text-sm font-medium text-ink md:text-base">
+      <span className={`mb-1 flex items-center gap-2 font-medium text-ink ${compact ? 'text-sm' : 'text-sm md:text-base'}`}>
         <span aria-hidden="true">{field.icon}</span>
         {field.label}
         {!compact && (
           <span className="text-sm font-normal text-warm-brown">({field.hint})</span>
         )}
       </span>
-      <span className="flex items-baseline gap-2">
+      <span className="money-value">
         <span className="pixel-text text-sm text-[#d4a843]">£</span>
         <input
           id={field.id}
