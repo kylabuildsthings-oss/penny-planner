@@ -68,6 +68,8 @@ function simulate({
   let savings = 0
   let snapshot = null
   let firstMonth = null
+  const startDebt = Math.max(0, ccDebt + otherDebt)
+  const balances = [startDebt]
 
   if (cc <= EPS && other <= EPS && ccSpending <= EPS) {
     return {
@@ -78,6 +80,7 @@ function simulate({
       paidOff: true,
       firstMonth: { ccPayment: 0, otherPayment: 0, extra: 0 },
       snapshot: { remaining: 0, savings: 0, interestPaid: 0 },
+      balances: [0],
     }
   }
 
@@ -123,6 +126,7 @@ function simulate({
     const afterExtra = cascadePay(cc, other, allocation.cc || 0, allocation.other || 0)
     cc = afterExtra.cc
     other = afterExtra.other
+    balances.push((cc < EPS ? 0 : cc) + (other < EPS ? 0 : other))
 
     if (months === 1) {
       firstMonth = {
@@ -158,6 +162,7 @@ function simulate({
     paidOff,
     firstMonth: firstMonth ?? { ccPayment: 0, otherPayment: 0, extra: 0 },
     snapshot,
+    balances,
   }
 }
 
@@ -182,7 +187,42 @@ function remainingAfterMonths(result, months) {
   return result.remaining
 }
 
-function packStrategy(run, stoppedRun = run) {
+function buildJourney(run, startDebt) {
+  const balances = run.balances ?? [startDebt]
+  const freedomMonth = run.paidOff ? run.months : null
+  const stages = [
+    {
+      month: 0,
+      label: 'Now',
+      remaining: balances[0] ?? startDebt,
+      kind: 'debt',
+    },
+  ]
+
+  for (const month of [3, 6, 9, 12]) {
+    if (freedomMonth != null && month >= freedomMonth) break
+    if (month >= balances.length) break
+    stages.push({
+      month,
+      label: `Month ${month}`,
+      remaining: balances[month],
+      kind: 'debt',
+    })
+  }
+
+  if (run.paidOff) {
+    stages.push({
+      month: freedomMonth,
+      label: 'Freedom Month',
+      remaining: 0,
+      kind: 'free',
+    })
+  }
+
+  return stages
+}
+
+function packStrategy(run, stoppedRun = run, startDebt = 0) {
   return {
     months: run.paidOff ? run.months : null,
     paidOff: run.paidOff,
@@ -191,6 +231,7 @@ function packStrategy(run, stoppedRun = run) {
     freedomDate: calculateFreedomDate(run.paidOff ? run.months : NaN),
     stoppedMonths: stoppedRun.paidOff ? stoppedRun.months : null,
     stoppedPaidOff: stoppedRun.paidOff,
+    journey: buildJourney(run, startDebt),
   }
 }
 
@@ -281,10 +322,10 @@ export function calculateStrategies(rawInputs) {
       otherMinimum,
       smallerBalance,
     },
-    avalanche: packStrategy(avalancheRun, avalanchePair.stopped),
-    snowball: packStrategy(snowballRun, snowballPair.stopped),
+    avalanche: packStrategy(avalancheRun, avalanchePair.stopped, totalDebt),
+    snowball: packStrategy(snowballRun, snowballPair.stopped, totalDebt),
     safetyNet: {
-      ...packStrategy(safetyRun, safetyPair.stopped),
+      ...packStrategy(safetyRun, safetyPair.stopped, totalDebt),
       remaining: safetyRun.snapshot?.remaining ?? safetyRun.remaining,
       savings: safetyRun.snapshot?.savings ?? safetyRun.savings,
     },

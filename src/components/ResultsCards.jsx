@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { formatCurrency } from '../utils/formatCurrency.js'
+import DebtJourneyWall from './DebtJourneyWall.jsx'
 
 function percentLabel(value) {
   const rounded = Math.round(value * 10) / 10
@@ -324,6 +325,13 @@ export default function ResultsCards({ results }) {
           <p className="text-[0.95rem] leading-6 text-white/90">{interestPhrase(safetyNet.interestPaid)}</p>
         </StrategyCard>
       </div>
+
+      <DebtJourneyWall
+        avalanche={avalanche}
+        snowball={snowball}
+        safetyNet={safetyNet}
+        startDebt={results.starter.ccDebt + results.starter.otherDebt}
+      />
     </section>
   )
 }
