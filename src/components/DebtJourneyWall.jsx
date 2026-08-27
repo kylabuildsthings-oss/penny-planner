@@ -2,38 +2,68 @@ import { useState } from 'react'
 import { formatCurrency } from '../utils/formatCurrency.js'
 
 const STRATEGIES = [
-  { id: 'avalanche', label: 'Avalanche', icon: '❄️' },
-  { id: 'snowball', label: 'Snowball', icon: '🌱' },
-  { id: 'safetyNet', label: 'Safety Net', icon: '🛡️' },
+  { id: 'avalanche', label: 'Avalanche' },
+  { id: 'snowball', label: 'Snowball' },
+  { id: 'safetyNet', label: 'Safety Net' },
 ]
 
-const BRICK_COUNT = 3
+const ROW_PATTERNS = [
+  [1, 1, 1, 1],
+  [0.5, 1, 1, 1, 0.5],
+  [1, 1, 1, 1],
+  [0.5, 1, 1, 1, 0.5],
+]
 
-function brickSplit(remaining, startDebt) {
-  if (!(startDebt > 0) || remaining <= 0) {
-    return { red: 0, gold: BRICK_COUNT }
-  }
-  if (remaining >= startDebt * 0.98) {
-    return { red: BRICK_COUNT, gold: 0 }
-  }
-  const gold = Math.max(
-    1,
-    Math.min(BRICK_COUNT, Math.round((1 - remaining / startDebt) * BRICK_COUNT)),
-  )
-  return { red: BRICK_COUNT - gold, gold }
+function visibleRowCount(remaining, startDebt, free) {
+  if (free) return 2
+  if (!(startDebt > 0) || remaining <= 0) return 1
+  const ratio = remaining / startDebt
+  if (ratio >= 0.85) return 4
+  if (ratio >= 0.55) return 3
+  if (ratio >= 0.25) return 2
+  return 1
 }
 
-function BrickStack({ remaining, startDebt, free }) {
-  const { red, gold } = free ? { red: 0, gold: 0 } : brickSplit(remaining, startDebt)
-  const bricks = free
-    ? Array.from({ length: BRICK_COUNT }, () => 'green')
-    : [...Array.from({ length: red }, () => 'red'), ...Array.from({ length: gold }, () => 'gold')]
+function brickTones(count, remaining, startDebt, free) {
+  if (free) return Array.from({ length: count }, () => 'green')
+  if (!(startDebt > 0) || remaining <= 0) {
+    return Array.from({ length: count }, () => 'gold')
+  }
+  if (remaining >= startDebt * 0.98) {
+    return Array.from({ length: count }, () => 'red')
+  }
+  const gold = Math.max(1, Math.min(count, Math.round((1 - remaining / startDebt) * count)))
+  return [
+    ...Array.from({ length: count - gold }, () => 'red'),
+    ...Array.from({ length: gold }, () => 'gold'),
+  ]
+}
+
+function BrickWall({ remaining, startDebt, free }) {
+  const rows = visibleRowCount(remaining, startDebt, free)
+  const pattern = ROW_PATTERNS.slice(ROW_PATTERNS.length - rows)
+  const count = pattern.reduce((sum, widths) => sum + widths.length, 0)
+  const tones = brickTones(count, remaining, startDebt, free)
+  let cursor = 0
 
   return (
-    <div className="journey-stack" aria-hidden="true">
-      {bricks.map((tone, index) => (
-        <span key={`${tone}-${index}`} className={`journey-brick journey-brick-${tone}`} />
-      ))}
+    <div className="journey-masonry-slot" aria-hidden="true">
+      <div className="journey-masonry">
+        {pattern.map((widths, rowIndex) => (
+          <div key={rowIndex} className={`journey-row${widths[0] < 1 ? ' is-offset' : ''}`}>
+            {widths.map((width, brickIndex) => {
+              const tone = tones[cursor]
+              cursor += 1
+              return (
+                <span
+                  key={`${rowIndex}-${brickIndex}`}
+                  className={`journey-brick journey-brick-${tone}${width < 1 ? ' is-half' : ''}`}
+                />
+              )
+            })}
+          </div>
+        ))}
+      </div>
     </div>
   )
 }
@@ -46,18 +76,15 @@ function Stage({ stage, startDebt, showArrow }) {
       <div className={`journey-stage ${free ? 'is-free' : ''}`}>
         <p className="pixel-text journey-label">{stage.label}</p>
         {free ? (
-          <>
-            <p className="pixel-text journey-free-title">🎉 FREE!</p>
-            <img
-              src="/sprites/penny-dancing.png?v=2"
-              alt="Penny the budgie, dancing"
-              className="journey-penny penny-dancing"
-            />
-            <BrickStack remaining={0} startDebt={startDebt} free />
-          </>
+          <img
+            src="/sprites/penny-dancing.png?v=2"
+            alt="Penny the budgie, dancing"
+            className="journey-penny penny-dancing"
+          />
         ) : (
-          <BrickStack remaining={stage.remaining} startDebt={startDebt} />
+          <div className="journey-penny-spacer" />
         )}
+        <BrickWall remaining={stage.remaining} startDebt={startDebt} free={free} />
         <p className="pixel-text journey-balance">{formatCurrency(stage.remaining)}</p>
       </div>
       {showArrow ? (
@@ -91,7 +118,7 @@ export default function DebtJourneyWall({ avalanche, snowball, safetyNet, startD
             className={`journey-toggle-btn ${strategy === option.id ? 'is-on' : ''}`}
             onClick={() => setStrategy(option.id)}
           >
-            <span aria-hidden="true">{option.icon}</span> {option.label}
+            {option.label}
           </button>
         ))}
       </div>

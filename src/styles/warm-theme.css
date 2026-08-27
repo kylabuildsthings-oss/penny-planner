@@ -613,8 +613,8 @@ body {
 
 .journey-track {
   display: flex;
-  align-items: stretch;
-  gap: 0.15rem;
+  align-items: flex-end;
+  gap: 0;
   overflow-x: auto;
   padding: 0.25rem 0.15rem 0.4rem;
   scrollbar-color: #1a1208 #ffe8c8;
@@ -626,49 +626,72 @@ body {
   flex-direction: column;
   align-items: center;
   justify-content: flex-end;
-  width: min(38vw, 7.4rem);
-  min-width: 6.4rem;
+  width: min(46vw, 9.6rem);
+  min-width: 8.2rem;
   text-align: center;
 }
 
+.journey-stage.is-free {
+  min-width: 8.6rem;
+}
+
 .journey-label,
-.journey-balance,
-.journey-free-title {
+.journey-balance {
   color: #1a1208;
 }
 
 .journey-label {
-  margin: 0 0 0.55rem;
-  min-height: 2.2rem;
-  font-size: 8px;
-  line-height: 1.5;
-}
-
-.journey-free-title {
   margin: 0 0 0.35rem;
-  font-size: 9px;
-  line-height: 1.5;
+  min-height: 2.4rem;
+  font-size: 8px;
+  line-height: 1.45;
 }
 
 .journey-balance {
-  margin: 0.5rem 0 0;
+  margin: 0.4rem 0 0;
   font-size: 8px;
   line-height: 1.5;
 }
 
-.journey-stack {
+.journey-masonry-slot {
   display: flex;
   flex-direction: column;
-  gap: 3px;
+  justify-content: flex-end;
+  min-height: 3.35rem;
+}
+
+.journey-masonry {
+  display: flex;
+  flex-direction: column;
+}
+
+.journey-row {
+  display: flex;
+  margin-top: -3px;
+}
+
+.journey-row:first-child {
+  margin-top: 0;
+}
+
+.journey-row.is-offset {
+  position: relative;
+  z-index: 1;
 }
 
 .journey-brick {
   display: block;
-  width: 2.5rem;
-  height: 1rem;
+  flex: 0 0 auto;
+  width: 1.35rem;
+  height: 0.68rem;
+  margin-right: -3px;
   border: 3px solid #111;
   border-radius: 0;
   image-rendering: pixelated;
+}
+
+.journey-brick.is-half {
+  width: 0.8rem;
 }
 
 .journey-brick-red {
@@ -686,17 +709,23 @@ body {
 .journey-arrow {
   display: flex;
   flex: 0 0 auto;
-  align-items: center;
-  padding-bottom: 1.6rem;
+  align-items: flex-start;
+  padding: 0.15rem 0.28rem 2.3rem;
   color: #1a1208;
   font-family: var(--font-pixel);
-  font-size: 12px;
+  font-size: 10px;
+}
+
+.journey-penny,
+.journey-penny-spacer {
+  width: 3.1rem;
+  height: 2.35rem;
+  margin-bottom: -0.2rem;
 }
 
 .journey-penny {
-  width: 3.4rem;
-  height: auto;
-  margin-bottom: 0.35rem;
+  object-fit: contain;
+  object-position: bottom;
   image-rendering: pixelated;
 }
 
@@ -716,8 +745,8 @@ body {
   }
 
   .journey-stage {
-    width: 7rem;
-    min-width: 7rem;
+    width: 9.4rem;
+    min-width: 9.4rem;
   }
 }
 

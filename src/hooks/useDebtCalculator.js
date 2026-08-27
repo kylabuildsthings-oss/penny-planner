@@ -213,7 +213,7 @@ function buildJourney(run, startDebt) {
   if (run.paidOff) {
     stages.push({
       month: freedomMonth,
-      label: 'Freedom Month',
+      label: freedomMonth === 0 ? 'Now (FREE)' : `Month ${freedomMonth} (FREE)`,
       remaining: 0,
       kind: 'free',
     })
