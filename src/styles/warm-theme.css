@@ -137,6 +137,21 @@ body {
   transition: width 700ms ease;
 }
 
+.progress-fill-loading {
+  width: 0;
+  transition: none;
+  animation: loading-fill ease-in-out forwards;
+}
+
+@keyframes loading-fill {
+  0% {
+    width: 8%;
+  }
+  100% {
+    width: 100%;
+  }
+}
+
 .input-card {
   display: block;
   width: 100%;
@@ -276,13 +291,28 @@ body {
   box-shadow: 0 12px 28px rgba(93, 64, 55, 0.16);
 }
 
+.plan-grid {
+  display: grid;
+  align-items: stretch;
+  gap: 1.25rem;
+}
+
+@media (min-width: 80rem) {
+  .plan-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-auto-rows: 1fr;
+  }
+}
+
 .flip-card {
   perspective: 1400px;
   animation: card-in 500ms ease both;
+  height: 100%;
 }
 
 .flip-card-inner {
   display: grid;
+  height: 100%;
   transform-style: preserve-3d;
   transition: transform 620ms ease;
 }
@@ -293,6 +323,13 @@ body {
 
 .flip-face {
   grid-area: 1 / 1;
+  min-height: 100%;
+  height: 100%;
+}
+
+.flip-rotator {
+  height: 100%;
+  min-height: 100%;
   backface-visibility: hidden;
   -webkit-backface-visibility: hidden;
 }
@@ -301,7 +338,7 @@ body {
   z-index: 1;
 }
 
-.flip-back {
+.flip-back .flip-rotator {
   transform: rotateY(180deg);
 }
 
@@ -343,6 +380,11 @@ body {
 @media (prefers-reduced-motion: reduce) {
   .flip-card-inner {
     transition: none;
+  }
+
+  .progress-fill-loading {
+    animation: none;
+    width: 70%;
   }
 }
 

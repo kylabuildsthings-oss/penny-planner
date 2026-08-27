@@ -1,12 +1,13 @@
+import { THINK_MS } from '../hooks/useDebtCalculator.js'
+
 const SPRITES = {
   happy: { src: '/sprites/penny-happy.png', label: '😊 HAPPY', alt: 'Penny the budgie, happy' },
   thinking: { src: '/sprites/penny-thinking.png', label: '⌛ THINKING', alt: 'Penny the budgie, thinking' },
   dancing: { src: '/sprites/penny-dancing.png', label: '🎉 DANCING', alt: 'Penny the budgie, dancing' },
 }
 
-export default function Header({ mood = 'happy', speech, progress = 0 }) {
+export default function Header({ mood = 'happy', speech, thinking = false, sparkleKey = 0 }) {
   const sprite = SPRITES[mood] ?? SPRITES.happy
-  const pct = Math.max(0, Math.min(100, Math.round(progress)))
 
   return (
     <header className="header-banner relative overflow-hidden rounded-b-3xl border-b-4 border-[#c47a32]">
@@ -29,19 +30,23 @@ export default function Header({ mood = 'happy', speech, progress = 0 }) {
           <p className="pixel-text mb-2 text-[10px] text-[#6d4c41]">Budgie&apos;s Finance Adventure</p>
           <h1 className="pixel-title text-[clamp(1.15rem,5vw,2.6rem)] leading-snug">Penny Planner</h1>
 
-          <div className="mt-5 w-full max-w-xl md:mt-6">
-            <p className="pixel-text mb-2 text-[10px] text-[#6d4c41]">Debt Freedom: {pct}%</p>
-            <div
-              className="progress-track h-6 w-full"
-              role="progressbar"
-              aria-label="Debt freedom"
-              aria-valuemin={0}
-              aria-valuemax={100}
-              aria-valuenow={pct}
-            >
-              <div className="progress-fill" style={{ width: `${pct}%` }} />
+          {thinking ? (
+            <div className="mt-5 w-full max-w-xl md:mt-6">
+              <p className="pixel-text mb-2 text-[10px] text-[#6d4c41]">Loading</p>
+              <div
+                className="progress-track h-6 w-full"
+                role="progressbar"
+                aria-label="Loading"
+                aria-busy="true"
+              >
+                <div
+                  key={sparkleKey}
+                  className="progress-fill progress-fill-loading"
+                  style={{ animationDuration: `${THINK_MS}ms` }}
+                />
+              </div>
             </div>
-          </div>
+          ) : null}
         </div>
       </div>
     </header>

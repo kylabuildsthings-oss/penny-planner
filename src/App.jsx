@@ -14,7 +14,6 @@ export default function App() {
     cracked,
     thinking,
     results,
-    progress,
     sparkleKey,
   } = useDebtCalculator()
 
@@ -22,7 +21,7 @@ export default function App() {
 
   return (
     <div className={`flex min-h-dvh flex-1 flex-col ${compactLayout ? 'has-results' : ''}`}>
-      <Header mood={mood} speech={speech} progress={progress} />
+      <Header mood={mood} speech={speech} thinking={thinking} sparkleKey={sparkleKey} />
       <main className={`flex flex-1 flex-col ${compactLayout ? '' : 'landing-main'}`}>
         <InputForm
           inputs={inputs}

@@ -69,38 +69,40 @@ function StrategyCard({
   return (
     <div className={`flip-card ${flipped ? 'is-flipped' : ''}`} style={{ animationDelay: delay }}>
       <div className="flip-card-inner">
-        <article
-          className={`flip-face flip-front strategy-card flex h-full flex-col p-6 text-white md:p-7 ${gradient}`}
-          aria-labelledby={cardId}
-          aria-hidden={flipped}
-        >
-          <h3 id={cardId} className="pixel-text text-[11px] leading-5">
-            {title}
-          </h3>
-          <p className="mt-4 text-lg font-semibold leading-7 text-white">{description}</p>
-          <p className="mt-4 text-[1.02rem] leading-7 text-white/95">{info}</p>
-          <button
-            type="button"
-            className="flip-toggle"
-            onClick={toggle}
-            aria-expanded={flipped}
+        <div className="flip-face flip-front">
+          <article
+            className={`flip-rotator strategy-card flex h-full flex-col p-6 text-white md:p-7 ${gradient}`}
+            aria-labelledby={cardId}
+            aria-hidden={flipped}
           >
-            See how to do it
-          </button>
-        </article>
+            <h3 id={cardId} className="pixel-text text-[11px] leading-5">
+              {title}
+            </h3>
+            <p className="mt-4 text-lg font-semibold leading-7 text-white">{description}</p>
+            <p className="mt-4 flex-1 text-[1.02rem] leading-7 text-white/95">{info}</p>
+            <button
+              type="button"
+              className="flip-toggle"
+              onClick={toggle}
+              aria-expanded={flipped}
+            >
+              See how to do it
+            </button>
+          </article>
+        </div>
 
-        <article
-          className={`flip-face flip-back strategy-card p-6 text-white md:p-7 ${gradient}`}
-          aria-hidden={!flipped}
-        >
-          <div className="flex h-full flex-col">
+        <div className="flip-face flip-back">
+          <article
+            className={`flip-rotator strategy-card flex h-full flex-col p-6 text-white md:p-7 ${gradient}`}
+            aria-hidden={!flipped}
+          >
             <div className="flex items-center justify-between gap-3">
               <h3 className="pixel-text text-[11px] leading-5">{title}</h3>
               <button type="button" className="flip-toggle flip-toggle-back" onClick={toggle}>
                 What this plan is
               </button>
             </div>
-            <div className="mt-4 space-y-3">{children}</div>
+            <div className="mt-4 flex-1 space-y-3">{children}</div>
             <div className="mt-auto border-t border-white/25 pt-5 text-center">
               <MonthsBlock months={months} paidOff={paidOff} />
               <p className="freedom-date mt-3 text-base text-white">
@@ -108,8 +110,8 @@ function StrategyCard({
               </p>
               <p className="mt-3 text-sm italic text-white/95">{message}</p>
             </div>
-          </div>
-        </article>
+          </article>
+        </div>
       </div>
     </div>
   )
@@ -235,7 +237,7 @@ export default function ResultsCards({ results }) {
         </div>
       )}
 
-      <div className="grid items-stretch gap-5 xl:grid-cols-3">
+      <div className="plan-grid">
         <StrategyCard
           title="AVALANCHE"
           info={TIPS.avalanche}
