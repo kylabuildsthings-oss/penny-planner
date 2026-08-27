@@ -13,12 +13,14 @@ export default function Header({
   sparkleKey = 0,
   onHome,
 }) {
-  const sprite = SPRITES[mood] ?? SPRITES.happy
+  const displayMood = thinking ? 'thinking' : mood
+  const sprite = SPRITES[displayMood] ?? SPRITES.happy
   const penny = (
     <img
+      key={displayMood}
       src={`${sprite.src}?v=2`}
       alt={sprite.alt}
-      className={`penny-sprite penny-${mood} w-auto`}
+      className={`penny-sprite penny-${displayMood} w-auto`}
     />
   )
 

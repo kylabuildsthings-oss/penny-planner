@@ -360,10 +360,10 @@ export function useDebtCalculator() {
   }
 
   const speech = useMemo(() => {
-    if (mood === 'thinking') return '????'
+    if (thinking || mood === 'thinking') return '????'
     if (mood === 'dancing') return '0!'
     return "Let's crack this nut!"
-  }, [mood])
+  }, [mood, thinking])
 
   const updateInput = useCallback((field, value) => {
     setInputs((prev) => ({ ...prev, [field]: value }))
@@ -376,20 +376,23 @@ export function useDebtCalculator() {
     setMood('thinking')
     setSparkleKey((key) => key + 1)
 
-    const outcome = calculateStrategies(inputs)
+    const snapshot = { ...inputs }
+    const startedAt = Date.now()
 
     timersRef.current.push(window.setTimeout(() => setCracked(false), 700))
 
     timersRef.current.push(
       window.setTimeout(() => {
-        setThinking(false)
-        setResults(outcome)
-        if (outcome.kind === 'debtFree') {
-          setMood('dancing')
-        } else {
-          setMood('happy')
-        }
-      }, THINK_MS),
+        const outcome = calculateStrategies(snapshot)
+        const wait = Math.max(0, THINK_MS - (Date.now() - startedAt))
+        timersRef.current.push(
+          window.setTimeout(() => {
+            setThinking(false)
+            setResults(outcome)
+            setMood(outcome.kind === 'debtFree' ? 'dancing' : 'happy')
+          }, wait),
+        )
+      }, 0),
     )
   }, [inputs])
 
