@@ -124,10 +124,11 @@ export default function InputForm({
         ))}
       </div>
 
-      {showRates && !compact && (
+      {showRates && (
         <div className="mt-2.5 rounded-2xl border-2 border-border-warm bg-white/70 p-3 md:p-4">
           <p className="mb-3 text-sm text-warm-brown">
             No pressure — leave these blank and we&apos;ll use typical UK rates.
+            {compact ? ' Tap Crack the Nut again to update your plans.' : ''}
           </p>
           <div className="grid gap-3 sm:grid-cols-2">
             <RateField
@@ -150,18 +151,22 @@ export default function InputForm({
         </div>
       )}
 
-      {!compact && (
-        <div className="mt-2.5 flex flex-col items-center gap-1.5 text-center sm:flex-row sm:justify-center sm:gap-5">
+      <div className="mt-2.5 flex flex-col items-center gap-1.5 text-center sm:flex-row sm:justify-center sm:gap-5">
+        {!compact && (
           <p className="text-sm italic text-warm-brown">Every penny counts toward your freedom!</p>
-          <button
-            type="button"
-            className="text-sm font-medium text-ink underline decoration-border-warm underline-offset-4 hover:text-warm-brown"
-            onClick={() => setShowRates((open) => !open)}
-          >
-            {showRates ? 'Hide interest rates' : 'I know my interest rates (optional)'}
-          </button>
-        </div>
-      )}
+        )}
+        <button
+          type="button"
+          className="text-sm font-medium text-ink underline decoration-border-warm underline-offset-4 hover:text-warm-brown"
+          onClick={() => setShowRates((open) => !open)}
+        >
+          {showRates
+            ? 'Hide interest rates'
+            : compact
+              ? 'Add or change interest rates (optional)'
+              : 'I know my interest rates (optional)'}
+        </button>
+      </div>
 
       <div className={`flex justify-center ${compact ? 'mt-2.5' : 'mt-auto pt-3'}`}>
         <button type="button" className="crack-btn" onClick={onCrack} disabled={thinking}>
