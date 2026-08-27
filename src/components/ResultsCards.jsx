@@ -67,12 +67,14 @@ function StrategyCard({
   message,
   gradient,
   delay,
+  onSelectPlan,
   children,
 }) {
   const [flipped, setFlipped] = useState(false)
   const cardId = `${title.toLowerCase().replace(/\s+/g, '-')}-plan`
 
   function toggle() {
+    onSelectPlan?.()
     setFlipped((value) => !value)
   }
 
@@ -192,6 +194,8 @@ const TIPS = {
 }
 
 export default function ResultsCards({ results }) {
+  const [wallPlan, setWallPlan] = useState('avalanche')
+
   if (!results) {
     return null
   }
@@ -265,6 +269,7 @@ export default function ResultsCards({ results }) {
           message="You're closer than you think!"
           gradient="bg-gradient-to-br from-[#4A90D9] to-[#2E6BB0]"
           delay="0ms"
+          onSelectPlan={() => setWallPlan('avalanche')}
         >
           <div>
             <p className="text-[0.95rem] font-semibold text-white">How to do it</p>
@@ -286,6 +291,7 @@ export default function ResultsCards({ results }) {
           message="Small wins lead to big victories!"
           gradient="bg-gradient-to-br from-[#66BB6A] to-[#2E7D32]"
           delay="80ms"
+          onSelectPlan={() => setWallPlan('snowball')}
         >
           <div>
             <p className="text-[0.95rem] font-semibold text-white">How to do it</p>
@@ -307,6 +313,7 @@ export default function ResultsCards({ results }) {
           message="Smart planning pays off!"
           gradient="bg-gradient-to-br from-[#FFB74D] to-[#F57C00]"
           delay="160ms"
+          onSelectPlan={() => setWallPlan('safetyNet')}
         >
           <div>
             <p className="text-[0.95rem] font-semibold text-white">How to do it</p>
@@ -331,6 +338,9 @@ export default function ResultsCards({ results }) {
         snowball={snowball}
         safetyNet={safetyNet}
         startDebt={results.starter.ccDebt + results.starter.otherDebt}
+        leftover={spendable}
+        strategy={wallPlan}
+        onStrategyChange={setWallPlan}
       />
     </section>
   )

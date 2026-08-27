@@ -1,4 +1,3 @@
-import { useState } from 'react'
 import { formatCurrency } from '../utils/formatCurrency.js'
 
 const STRATEGIES = [
@@ -12,12 +11,14 @@ const ROW_PATTERNS = [
   [0.5, 1, 1, 1, 0.5],
   [1, 1, 1, 1],
   [0.5, 1, 1, 1, 0.5],
+  [1, 1, 1, 1],
 ]
 
 function visibleRowCount(remaining, startDebt, free) {
   if (free) return 1
   if (!(startDebt > 0) || remaining <= 0) return 1
   const ratio = remaining / startDebt
+  if (ratio > 1.02) return 5
   if (ratio >= 0.85) return 4
   if (ratio >= 0.55) return 3
   if (ratio >= 0.25) return 2
@@ -96,8 +97,46 @@ function Stage({ stage, startDebt, showArrow }) {
   )
 }
 
-export default function DebtJourneyWall({ avalanche, snowball, safetyNet, startDebt }) {
-  const [strategy, setStrategy] = useState('avalanche')
+function journeysMatch(a, b) {
+  const left = a?.journey ?? []
+  const right = b?.journey ?? []
+  if (left.length !== right.length) return false
+  return left.every(
+    (stage, index) =>
+      stage.month === right[index].month &&
+      stage.kind === right[index].kind &&
+      Math.abs(stage.remaining - right[index].remaining) < 0.5,
+  )
+}
+
+function statusCopy(selected, leftover, avalanche, snowball, safetyNet) {
+  const name = STRATEGIES.find((option) => option.id === selected)?.label ?? 'This plan'
+  const plan = selected === 'snowball' ? snowball : selected === 'safetyNet' ? safetyNet : avalanche
+
+  if (plan.paidOff && plan.months != null) {
+    return `Penny dances at Month ${plan.months}, when ${name} reaches £0.`
+  }
+
+  if (!(leftover > 0)) {
+    return 'There is no leftover this month, so every plan looks the same — the wall stays orange and can grow. Penny dances when a plan actually reaches £0.'
+  }
+
+  if (journeysMatch(avalanche, snowball) && selected !== 'safetyNet') {
+    return 'With one main debt, Avalanche and Snowball follow the same wall. Safety Net keeps a bit back, so it can take longer.'
+  }
+
+  return `${name} does not reach £0 on this leftover, so Penny has no freedom wall to dance on yet.`
+}
+
+export default function DebtJourneyWall({
+  avalanche,
+  snowball,
+  safetyNet,
+  startDebt,
+  leftover = 0,
+  strategy = 'avalanche',
+  onStrategyChange,
+}) {
   const selected =
     strategy === 'snowball' ? snowball : strategy === 'safetyNet' ? safetyNet : avalanche
   const stages = selected.journey ?? []
@@ -133,17 +172,21 @@ export default function DebtJourneyWall({ avalanche, snowball, safetyNet, startD
             role="radio"
             aria-checked={strategy === option.id}
             className={`journey-toggle-btn ${strategy === option.id ? 'is-on' : ''}`}
-            onClick={() => setStrategy(option.id)}
+            onClick={() => onStrategyChange?.(option.id)}
           >
             {option.label}
           </button>
         ))}
       </div>
 
-      <div className="journey-track">
+      <p className="journey-status" role="status">
+        {statusCopy(strategy, leftover, avalanche, snowball, safetyNet)}
+      </p>
+
+      <div className="journey-track" key={strategy}>
         {stages.map((stage, index) => (
           <Stage
-            key={`${stage.kind}-${stage.month}-${stage.label}`}
+            key={`${strategy}-${stage.kind}-${stage.month}-${stage.label}`}
             stage={stage}
             startDebt={startDebt}
             showArrow={index < stages.length - 1}

@@ -595,6 +595,7 @@ body {
 .journey-wall {
   margin-top: 2rem;
   padding: 1.15rem 1rem 1.3rem;
+  overflow: visible;
   border: 2px solid var(--color-border-warm);
   border-radius: 1.5rem;
   background: rgba(255, 253, 248, 0.95);
@@ -675,11 +676,21 @@ body {
   box-shadow: 0 0 0 3px rgba(255, 209, 102, 0.35);
 }
 
+.journey-status {
+  margin: -0.35rem auto 1rem;
+  max-width: 38rem;
+  color: var(--color-warm-brown);
+  font-size: 0.85rem;
+  line-height: 1.45;
+  text-align: center;
+}
+
 .journey-track {
   display: flex;
   align-items: flex-end;
   gap: 0;
   overflow-x: auto;
+  overflow-y: visible;
   padding: 0.25rem 0.15rem 0.4rem;
   scrollbar-color: var(--color-ink) var(--color-soft-gold);
 }
@@ -721,7 +732,7 @@ body {
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
-  min-height: 3.35rem;
+  min-height: 4.1rem;
 }
 
 .journey-masonry {
