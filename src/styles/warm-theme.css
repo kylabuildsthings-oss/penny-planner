@@ -16,8 +16,8 @@
 }
 
 :root {
-  --penny-h: clamp(6.25rem, 16svh, 10.25rem);
-  --header-py: clamp(0.45rem, 1.15svh, 1.1rem);
+  --penny-h: clamp(10rem, 22svh, 14rem);
+  --header-py: clamp(1.25rem, 2.2svh, 2rem);
   --section-py: clamp(0.45rem, 1.1svh, 1rem);
   --input-pad-y: clamp(0.45rem, 1svh, 0.7rem);
   --crack-pad-y: clamp(0.55rem, 1.2svh, 0.85rem);
@@ -25,39 +25,14 @@
 
 @media (min-width: 768px) {
   :root {
-    --penny-h: clamp(6.5rem, 17svh, 10.5rem);
-  }
-}
-
-@media (min-width: 1024px) and (min-height: 900px) {
-  :root {
-    --penny-h: clamp(7.25rem, 18svh, 11rem);
-    --header-py: clamp(0.6rem, 1.4svh, 1.25rem);
-  }
-}
-
-@media (max-height: 800px) and (min-width: 768px) {
-  :root {
-    --penny-h: clamp(5.5rem, 14svh, 7.5rem);
-    --header-py: 0.4rem;
-    --section-py: 0.4rem;
-    --input-pad-y: 0.4rem;
-    --crack-pad-y: 0.55rem;
+    --penny-h: clamp(11rem, 24svh, 14rem);
   }
 }
 
 .has-results {
-  --penny-h: clamp(5rem, 12svh, 7.25rem);
-  --header-py: 0.4rem;
-  --section-py: 0.35rem;
-  --input-pad-y: 0.4rem;
+  --section-py: 0.5rem;
+  --input-pad-y: 0.45rem;
   --crack-pad-y: 0.5rem;
-}
-
-@media (min-width: 1024px) and (min-height: 900px) {
-  .has-results {
-    --penny-h: clamp(5.5rem, 12svh, 7.75rem);
-  }
 }
 
 html,
