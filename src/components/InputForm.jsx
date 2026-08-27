@@ -41,7 +41,7 @@ const SPARKLES = [
 function MoneyField({ field, value, onChange, compact }) {
   return (
     <label className="input-card" htmlFor={field.id}>
-      <span className="mb-0.5 flex items-center gap-2 text-sm font-medium text-ink md:text-[0.95rem]">
+      <span className="mb-1 flex items-center gap-2 text-sm font-medium text-ink md:text-base">
         <span aria-hidden="true">{field.icon}</span>
         {field.label}
         {!compact && (
@@ -109,7 +109,7 @@ export default function InputForm({
   const [showRates, setShowRates] = useState(false)
 
   return (
-    <section className={`input-section mx-auto w-full px-4 ${compact ? 'max-w-7xl' : 'max-w-3xl'}`}>
+    <section className={`input-section mx-auto w-full px-4 ${compact ? 'max-w-7xl' : 'max-w-5xl'}`}>
       <div className="money-grid">
         {MONEY_FIELDS.map((field) => (
           <MoneyField

@@ -18,9 +18,9 @@
 :root {
   --penny-h: clamp(10rem, 22svh, 14rem);
   --header-py: clamp(1.25rem, 2.2svh, 2rem);
-  --section-py: clamp(0.45rem, 1.1svh, 1rem);
-  --input-pad-y: clamp(0.45rem, 1svh, 0.7rem);
-  --crack-pad-y: clamp(0.55rem, 1.2svh, 0.85rem);
+  --section-py: clamp(0.7rem, 1.6svh, 1.25rem);
+  --input-pad-y: clamp(0.85rem, 1.8svh, 1.2rem);
+  --crack-pad-y: clamp(0.75rem, 1.5svh, 1.05rem);
 }
 
 @media (min-width: 768px) {
@@ -80,7 +80,7 @@ body {
 
 .money-grid {
   display: grid;
-  gap: 0.65rem;
+  gap: 1rem;
   grid-template-columns: 1fr;
 }
 
@@ -91,6 +91,7 @@ body {
 }
 
 .has-results .money-grid {
+  gap: 0.65rem;
   grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
@@ -161,9 +162,13 @@ body {
   width: 100%;
   min-width: 0;
   font-family: var(--font-pixel);
-  font-size: 0.85rem;
+  font-size: 1.05rem;
   color: #1a1208;
   letter-spacing: 0.02em;
+}
+
+.has-results .input-card input[type="number"] {
+  font-size: 0.85rem;
 }
 
 .input-card input[type="number"]::-webkit-outer-spin-button,
@@ -223,6 +228,14 @@ body {
   object-fit: contain;
   filter: drop-shadow(1px 2px 0 #5d4037);
   flex-shrink: 0;
+}
+
+.landing-main {
+  min-height: 0;
+}
+
+.preview-card {
+  min-height: 11rem;
 }
 
 .strategy-card {

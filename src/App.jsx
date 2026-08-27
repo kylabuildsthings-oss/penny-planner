@@ -23,7 +23,7 @@ export default function App() {
   return (
     <div className={`flex min-h-dvh flex-col ${compactLayout ? 'has-results' : ''}`}>
       <Header mood={mood} speech={speech} progress={progress} />
-      <main className="flex flex-1 flex-col">
+      <main className={`flex flex-1 flex-col ${compactLayout ? '' : 'landing-main'}`}>
         <InputForm
           inputs={inputs}
           onChange={updateInput}
