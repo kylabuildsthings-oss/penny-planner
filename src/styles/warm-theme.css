@@ -15,10 +15,55 @@
   --color-title-shadow: #1a365d;
 }
 
+:root {
+  --penny-h: clamp(6.25rem, 16svh, 10.25rem);
+  --header-py: clamp(0.45rem, 1.15svh, 1.1rem);
+  --section-py: clamp(0.45rem, 1.1svh, 1rem);
+  --input-pad-y: clamp(0.45rem, 1svh, 0.7rem);
+  --crack-pad-y: clamp(0.55rem, 1.2svh, 0.85rem);
+}
+
+@media (min-width: 768px) {
+  :root {
+    --penny-h: clamp(6.5rem, 17svh, 10.5rem);
+  }
+}
+
+@media (min-width: 1024px) and (min-height: 900px) {
+  :root {
+    --penny-h: clamp(7.25rem, 18svh, 11rem);
+    --header-py: clamp(0.6rem, 1.4svh, 1.25rem);
+  }
+}
+
+@media (max-height: 800px) and (min-width: 768px) {
+  :root {
+    --penny-h: clamp(5.5rem, 14svh, 7.5rem);
+    --header-py: 0.4rem;
+    --section-py: 0.4rem;
+    --input-pad-y: 0.4rem;
+    --crack-pad-y: 0.55rem;
+  }
+}
+
+.has-results {
+  --penny-h: clamp(5rem, 12svh, 7.25rem);
+  --header-py: 0.4rem;
+  --section-py: 0.35rem;
+  --input-pad-y: 0.4rem;
+  --crack-pad-y: 0.5rem;
+}
+
+@media (min-width: 1024px) and (min-height: 900px) {
+  .has-results {
+    --penny-h: clamp(5.5rem, 12svh, 7.75rem);
+  }
+}
+
 html,
 body,
 #root {
-  min-height: 100%;
+  min-height: 100dvh;
 }
 
 body {
@@ -46,6 +91,38 @@ body {
 .header-banner {
   background: linear-gradient(180deg, #fff4c8 0%, #ffcc66 48%, #ff9f43 100%);
   box-shadow: 0 8px 24px rgba(232, 115, 42, 0.18);
+}
+
+.header-inner {
+  padding-top: var(--header-py);
+  padding-bottom: var(--header-py);
+}
+
+.input-section {
+  padding-top: var(--section-py);
+  padding-bottom: var(--section-py);
+}
+
+.money-grid {
+  display: grid;
+  gap: 0.65rem;
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 560px) {
+  .money-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.has-results .money-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+@media (min-width: 1024px) {
+  .has-results .money-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
 }
 
 .speech-bubble {
@@ -88,16 +165,16 @@ body {
 .input-card {
   display: block;
   width: 100%;
-  padding: 1rem 1.25rem;
+  padding: var(--input-pad-y) 1rem;
   border: 2px solid #c4a574;
   border-radius: 999px;
   background: #fffdf8;
-  box-shadow: 0 0 0 6px rgba(255, 209, 102, 0.18), 0 8px 20px rgba(232, 115, 42, 0.12);
+  box-shadow: 0 0 0 4px rgba(255, 209, 102, 0.16), 0 6px 14px rgba(232, 115, 42, 0.1);
   transition: box-shadow 200ms ease, transform 200ms ease;
 }
 
 .input-card:focus-within {
-  box-shadow: 0 0 0 7px rgba(255, 140, 66, 0.28), 0 10px 24px rgba(232, 115, 42, 0.16);
+  box-shadow: 0 0 0 5px rgba(255, 140, 66, 0.28), 0 8px 18px rgba(232, 115, 42, 0.14);
   transform: translateY(-1px);
 }
 
@@ -109,7 +186,7 @@ body {
   width: 100%;
   min-width: 0;
   font-family: var(--font-pixel);
-  font-size: 0.95rem;
+  font-size: 0.85rem;
   color: #1a1208;
   letter-spacing: 0.02em;
 }
@@ -125,18 +202,18 @@ body {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 0.85rem;
-  min-width: min(100%, 34rem);
-  padding: 1.15rem 1.75rem;
+  gap: 0.65rem;
+  min-width: min(100%, 28rem);
+  padding: var(--crack-pad-y) 1.35rem;
   border: 3px solid #5d4037;
-  border-radius: 1.6rem;
+  border-radius: 1.4rem;
   color: #fff4b0;
   font-family: var(--font-pixel);
-  font-size: clamp(0.7rem, 2.4vw, 1.05rem);
+  font-size: clamp(0.62rem, 2.1vw, 0.92rem);
   letter-spacing: 0.08em;
   text-shadow: 3px 3px 0 #5d4037;
   background: linear-gradient(180deg, #ffd166 0%, #ffb347 42%, #e8732a 100%);
-  box-shadow: 0 0 0 6px rgba(255, 140, 66, 0.22), 0 12px 32px rgba(232, 115, 42, 0.35);
+  box-shadow: 0 0 0 5px rgba(255, 140, 66, 0.2), 0 10px 24px rgba(232, 115, 42, 0.32);
   animation: pulse-glow 2.2s ease-in-out infinite;
   cursor: pointer;
 }
@@ -154,9 +231,18 @@ body {
   opacity: 0.92;
 }
 
+.has-results .crack-btn {
+  min-width: min(100%, 22rem);
+}
+
+.has-results .nut-icon {
+  width: 1.5rem;
+  height: 1.5rem;
+}
+
 .nut-icon {
-  width: 2.4rem;
-  height: 2.4rem;
+  width: 1.85rem;
+  height: 1.85rem;
   object-fit: contain;
   filter: drop-shadow(1px 2px 0 #5d4037);
   flex-shrink: 0;
@@ -249,6 +335,7 @@ body {
 }
 
 .penny-sprite {
+  height: var(--penny-h);
   object-fit: contain;
   filter: drop-shadow(0 6px 10px rgba(93, 64, 55, 0.22));
 }
@@ -281,7 +368,7 @@ body {
     transform: translateY(0);
   }
   50% {
-    transform: translateY(-8px);
+    transform: translateY(-5px);
   }
 }
 

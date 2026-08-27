@@ -38,13 +38,15 @@ const SPARKLES = [
   { x: '8%', y: '48%', sx: '-70px', sy: '0px' },
 ]
 
-function MoneyField({ field, value, onChange }) {
+function MoneyField({ field, value, onChange, compact }) {
   return (
     <label className="input-card" htmlFor={field.id}>
-      <span className="mb-2 flex items-center gap-2 font-medium text-ink">
+      <span className="mb-0.5 flex items-center gap-2 text-sm font-medium text-ink md:text-[0.95rem]">
         <span aria-hidden="true">{field.icon}</span>
         {field.label}
-        <span className="text-sm font-normal text-warm-brown">({field.hint})</span>
+        {!compact && (
+          <span className="text-sm font-normal text-warm-brown">({field.hint})</span>
+        )}
       </span>
       <span className="flex items-baseline gap-2">
         <span className="pixel-text text-sm text-[#d4a843]">£</span>
@@ -102,38 +104,30 @@ export default function InputForm({
   cracked,
   thinking,
   sparkleKey,
+  compact = false,
 }) {
   const [showRates, setShowRates] = useState(false)
 
   return (
-    <section className="mx-auto w-full max-w-xl px-5 py-10">
-      <div className="flex flex-col gap-4">
+    <section className={`input-section mx-auto w-full px-4 ${compact ? 'max-w-5xl' : 'max-w-3xl'}`}>
+      <div className="money-grid">
         {MONEY_FIELDS.map((field) => (
           <MoneyField
             key={field.id}
             field={field}
             value={inputs[field.id]}
             onChange={onChange}
+            compact={compact}
           />
         ))}
       </div>
 
-      <div className="mt-5 text-center">
-        <button
-          type="button"
-          className="text-sm font-medium text-ink underline decoration-border-warm underline-offset-4 hover:text-warm-brown"
-          onClick={() => setShowRates((open) => !open)}
-        >
-          {showRates ? 'Hide interest rates' : 'I know my interest rates (optional)'}
-        </button>
-      </div>
-
-      {showRates && (
-        <div className="mt-4 rounded-2xl border-2 border-border-warm bg-white/70 p-4">
-          <p className="mb-4 text-sm text-warm-brown">
+      {showRates && !compact && (
+        <div className="mt-2.5 rounded-2xl border-2 border-border-warm bg-white/70 p-3 md:p-4">
+          <p className="mb-3 text-sm text-warm-brown">
             No pressure — leave these blank and we&apos;ll use typical UK rates.
           </p>
-          <div className="grid gap-4 sm:grid-cols-2">
+          <div className="grid gap-3 sm:grid-cols-2">
             <RateField
               id="ccApr"
               label="Credit card rate"
@@ -154,11 +148,20 @@ export default function InputForm({
         </div>
       )}
 
-      <p className="mt-6 text-center text-base italic text-warm-brown">
-        Every penny counts toward your freedom!
-      </p>
+      {!compact && (
+        <div className="mt-2.5 flex flex-col items-center gap-1.5 text-center sm:flex-row sm:justify-center sm:gap-5">
+          <p className="text-sm italic text-warm-brown">Every penny counts toward your freedom!</p>
+          <button
+            type="button"
+            className="text-sm font-medium text-ink underline decoration-border-warm underline-offset-4 hover:text-warm-brown"
+            onClick={() => setShowRates((open) => !open)}
+          >
+            {showRates ? 'Hide interest rates' : 'I know my interest rates (optional)'}
+          </button>
+        </div>
+      )}
 
-      <div className="mt-8 flex justify-center">
+      <div className={`flex justify-center ${compact ? 'mt-2.5' : 'mt-3 md:mt-4'}`}>
         <button type="button" className="crack-btn" onClick={onCrack} disabled={thinking}>
           {sparkleKey > 0 &&
             SPARKLES.map((sparkle, index) => (

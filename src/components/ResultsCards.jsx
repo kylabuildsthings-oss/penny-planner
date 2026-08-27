@@ -28,7 +28,7 @@ function interestPhrase(amount) {
 
 function HowTo({ steps }) {
   return (
-    <ol className="mt-2 list-decimal space-y-2 pl-5 text-sm/6 text-white/95">
+    <ol className="mt-1.5 list-decimal space-y-1.5 pl-5 text-sm/6 text-white/95">
       {steps.map((step) => (
         <li key={step}>{step}</li>
       ))}
@@ -63,8 +63,8 @@ function InfoTip({ label, text }) {
 function MonthsBlock({ months, paidOff }) {
   return (
     <div className="text-center">
-      <p className="pixel-text text-4xl leading-none">{monthsNumber(months, paidOff)}</p>
-      <p className="mt-3 text-sm text-white/90">
+      <p className="pixel-text text-3xl leading-none md:text-4xl">{monthsNumber(months, paidOff)}</p>
+      <p className="mt-1.5 text-sm text-white/90">
         Debt-free in {monthsPhrase(months, paidOff)}
       </p>
     </div>
@@ -85,21 +85,21 @@ function StrategyCard({
 }) {
   return (
     <article
-      className={`strategy-card flex flex-col p-6 text-white ${gradient}`}
+      className={`strategy-card flex flex-col p-4 text-white md:p-5 ${gradient}`}
       style={{ animationDelay: delay }}
     >
       <div className="flex items-center justify-between gap-3">
         <h3 className="pixel-text text-[11px] leading-5">{title}</h3>
         <InfoTip label={title} text={info} />
       </div>
-      <p className="mt-3 text-sm/6 text-white/90">{description}</p>
-      <div className="mt-5 flex flex-1 flex-col gap-4">{children}</div>
-      <div className="mt-auto pt-6 text-center">
+      <p className="mt-2 text-sm/6 text-white/90">{description}</p>
+      <div className="mt-3 flex flex-1 flex-col gap-2.5">{children}</div>
+      <div className="mt-auto pt-3 text-center">
         <MonthsBlock months={months} paidOff={paidOff} />
-        <p className="freedom-date mt-4 text-base text-white">
+        <p className="freedom-date mt-2.5 text-base text-white">
           Freedom date: {freedomDate}
         </p>
-        <p className="mt-3 text-sm italic text-white/95">{message}</p>
+        <p className="mt-2.5 text-sm italic text-white/95">{message}</p>
       </div>
     </article>
   )
@@ -170,10 +170,10 @@ const TIPS = {
 export default function ResultsCards({ results }) {
   if (!results) {
     return (
-      <section className="mx-auto max-w-5xl px-5 pb-12">
-        <div className="rounded-xl border-2 border-border-warm bg-white/70 px-6 py-10 text-center shadow-sm">
-          <p className="pixel-text text-xs leading-6 text-ink">Ready to see your future?</p>
-          <p className="mt-3 text-warm-brown">Enter your numbers and crack the nut.</p>
+      <section className="mx-auto w-full max-w-5xl px-4 pb-3 md:pb-4">
+        <div className="w-full rounded-xl border-2 border-border-warm bg-white/70 px-4 py-3 text-center shadow-sm">
+          <p className="pixel-text text-[10px] leading-5 text-ink sm:text-xs">Ready to see your future?</p>
+          <p className="mt-1 text-sm text-warm-brown">Enter your numbers and crack the nut.</p>
         </div>
       </section>
     )
@@ -181,7 +181,7 @@ export default function ResultsCards({ results }) {
 
   if (results.kind === 'empty') {
     return (
-      <section className="mx-auto max-w-5xl px-5 pb-12">
+      <section className="mx-auto w-full max-w-5xl px-4 pb-3 md:pb-4">
         <p className="text-center text-lg font-semibold text-[#d4a843]">
           🌱 No debt to crack—add numbers to start!
         </p>
@@ -191,8 +191,8 @@ export default function ResultsCards({ results }) {
 
   if (results.kind === 'debtFree') {
     return (
-      <section className="mx-auto max-w-5xl px-5 pb-12">
-        <div className="rounded-xl border-2 border-[#66bb6a] bg-[#e8f5e9] px-6 py-10 text-center">
+      <section className="mx-auto max-w-5xl px-4 pb-6 md:pb-8">
+        <div className="rounded-xl border-2 border-[#66bb6a] bg-[#e8f5e9] px-6 py-6 text-center md:py-8">
           <p className="pixel-text text-xs leading-6 text-[#2e7d32]">🎉 AMAZING! You&apos;re debt-free!</p>
           <p className="mt-3 text-[#2e7d32]">Penny is dancing for you.</p>
         </div>
@@ -203,15 +203,15 @@ export default function ResultsCards({ results }) {
   const { avalanche, snowball, safetyNet, warning, extraMoney, spendable, rates } = results
 
   return (
-    <section className="mx-auto max-w-5xl px-5 pb-12" aria-live="polite">
+    <section className="mx-auto w-full max-w-5xl px-4 pb-4 md:pb-5" aria-live="polite">
       {warning === 'overspend' && (
-        <p className="mb-6 text-center text-lg font-semibold text-orange">
+        <p className="mb-3 text-center text-lg font-semibold text-orange">
           💪 Spending more than earning—let&apos;s cut back!
         </p>
       )}
 
       {extraMoney >= 0 && (
-        <div className="mb-6 rounded-xl border-2 border-border-warm bg-white/80 px-5 py-4 text-center">
+        <div className="mb-4 rounded-xl border-2 border-border-warm bg-white/80 px-5 py-3 text-center">
           <p className="text-ink">
             After living costs you have <strong>{formatCurrency(spendable)}</strong> left
             for debt this month.
@@ -225,7 +225,7 @@ export default function ResultsCards({ results }) {
         </div>
       )}
 
-      <div className="grid items-stretch gap-5 md:grid-cols-3">
+      <div className="grid items-stretch gap-4 md:grid-cols-3">
         <StrategyCard
           title="AVALANCHE"
           info={TIPS.avalanche}
