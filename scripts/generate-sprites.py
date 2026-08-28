@@ -188,85 +188,69 @@ def crop_content(img, pad=8):
     return img.crop((left, top, right, bottom))
 
 
-def content_bbox(rows):
-    ys = [y for y, row in enumerate(rows) if any(c != "." for c in row)]
-    xs = [x for row in rows for x, c in enumerate(row) if c != "."]
-    return min(xs), min(ys), max(xs) + 1, max(ys) + 1
-
-
 def square_canvas(img):
     side = max(img.size)
     canvas = Image.new("RGBA", (side, side), (0, 0, 0, 0))
-    canvas.paste(img, ((side - img.width) // 2, (side - img.height) // 2))
+    canvas.paste(img, ((side - img.width) // 2, (side - img.height) // 2), img)
     return canvas
 
 
-def write_favicons(rows):
-    """Tight-crop Penny with fully transparent pixels only — no cream plate."""
-    x0, y0, x1, y1 = content_bbox(rows)
-    w, h = x1 - x0, y1 - y0
-    pad = 1
-    vw, vh = w + pad * 2, h + pad * 2
-    pixels = []
-    rects = []
-    for y, row in enumerate(rows):
-        for x, ch in enumerate(row):
-            if ch == ".":
-                continue
-            r, g, b, _a = PAL[ch]
-            rects.append(
-                f'<rect x="{x - x0 + pad}" y="{y - y0 + pad}" width="1" height="1" '
-                f'fill="#{r:02x}{g:02x}{b:02x}"/>'
-            )
-            pixels.append((x - x0 + pad, y - y0 + pad, (r, g, b, 255)))
+def harden_alpha(img, threshold=32):
+    """Drop anti-aliased fringe so browsers cannot plate it as a white square."""
+    img = img.convert("RGBA")
+    px = img.load()
+    for y in range(img.height):
+        for x in range(img.width):
+            r, g, b, a = px[x, y]
+            px[x, y] = (r, g, b, 255 if a >= threshold else 0)
+    return img
 
-    (PUBLIC / "favicon.svg").write_text(
-        f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {vw} {vh}" '
-        f'shape-rendering="crispEdges">\n'
-        + "\n".join(rects)
-        + "\n</svg>\n"
-    )
 
-    def paint(scale):
-        img = Image.new("RGBA", (vw * scale, vh * scale), (0, 0, 0, 0))
-        px = img.load()
-        for x, y, color in pixels:
-            for dy in range(scale):
-                for dx in range(scale):
-                    px[x * scale + dx, y * scale + dy] = color
-        return square_canvas(img)
+def scale_to(img, size):
+    if img.width == size and img.height == size:
+        return img
+    return img.resize((size, size), Image.NEAREST)
 
-    png = paint(2)
+
+def write_favicons_from_sprite(sprite_path):
+    """Build site icons from the cute Penny sprite, not the crude 32x32 grid."""
+    import base64
+    import io
+
+    src = harden_alpha(Image.open(sprite_path).convert("RGBA"))
+    src = crop_content(src, pad=2)
+    src = square_canvas(src)
+
+    png = scale_to(src, 64)
     png.save(PUBLIC / "favicon.png", "PNG")
-    ico16, ico32, ico48 = paint(1), paint(2), paint(3)
+
+    ico32 = scale_to(src, 32)
+    ico48 = scale_to(src, 48)
     ico32.save(
         PUBLIC / "favicon.ico",
         format="ICO",
-        append_images=[ico16, ico48],
-        sizes=[(16, 16), (32, 32), (48, 48)],
+        append_images=[ico48],
+        sizes=[(32, 32), (48, 48)],
     )
-    apple = paint(8).resize((180, 180), Image.NEAREST)
+
+    buf = io.BytesIO()
+    png.save(buf, format="PNG")
+    b64 = base64.b64encode(buf.getvalue()).decode("ascii")
+    (PUBLIC / "favicon.svg").write_text(
+        f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {png.width} {png.height}">\n'
+        f'  <image href="data:image/png;base64,{b64}" width="{png.width}" height="{png.height}"/>\n'
+        f"</svg>\n"
+    )
+
+    apple = scale_to(src, 180)
     apple.save(PUBLIC / "apple-touch-icon.png", "PNG")
-    print(f"wrote favicon.svg {vw}x{vh}, favicon.png {png.size}, favicon.ico")
+    print(f"wrote favicons from {sprite_path.name} png={png.size}")
 
 
 def main():
-    sprites = {
-        "penny-happy.png": HAPPY,
-        "penny-thinking.png": THINKING,
-        "penny-dancing.png": DANCING,
-    }
-    for name, rows in sprites.items():
-        img = crop_content(render(rows, scale=8), pad=16)
-        img.save(OUT / name)
-        print(f"wrote {name} {img.size}")
-
-    nut = render(CHESTNUT[:9], scale=4)
-    nut = crop_content(nut, pad=4)
-    nut.save(OUT / "chestnut.png")
-    print(f"wrote chestnut.png {nut.size}")
-
-    write_favicons(HAPPY)
+    # Do not regenerate public/sprites from the ASCII grids — those would
+    # overwrite the cute Penny art used in the header.
+    write_favicons_from_sprite(OUT / "penny-happy.png")
 
 
 if __name__ == "__main__":
