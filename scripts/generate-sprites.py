@@ -5,8 +5,11 @@ from pathlib import Path
 
 from PIL import Image
 
-OUT = Path(__file__).resolve().parent.parent / "public" / "sprites"
+ROOT = Path(__file__).resolve().parent.parent
+OUT = ROOT / "public" / "sprites"
+PUBLIC = ROOT / "public"
 OUT.mkdir(parents=True, exist_ok=True)
+PUBLIC.mkdir(parents=True, exist_ok=True)
 
 PAL = {
     ".": (0, 0, 0, 0),
@@ -185,6 +188,68 @@ def crop_content(img, pad=8):
     return img.crop((left, top, right, bottom))
 
 
+def content_bbox(rows):
+    ys = [y for y, row in enumerate(rows) if any(c != "." for c in row)]
+    xs = [x for row in rows for x, c in enumerate(row) if c != "."]
+    return min(xs), min(ys), max(xs) + 1, max(ys) + 1
+
+
+def square_canvas(img):
+    side = max(img.size)
+    canvas = Image.new("RGBA", (side, side), (0, 0, 0, 0))
+    canvas.paste(img, ((side - img.width) // 2, (side - img.height) // 2))
+    return canvas
+
+
+def write_favicons(rows):
+    """Tight-crop Penny with fully transparent pixels only — no cream plate."""
+    x0, y0, x1, y1 = content_bbox(rows)
+    w, h = x1 - x0, y1 - y0
+    pad = 1
+    vw, vh = w + pad * 2, h + pad * 2
+    pixels = []
+    rects = []
+    for y, row in enumerate(rows):
+        for x, ch in enumerate(row):
+            if ch == ".":
+                continue
+            r, g, b, _a = PAL[ch]
+            rects.append(
+                f'<rect x="{x - x0 + pad}" y="{y - y0 + pad}" width="1" height="1" '
+                f'fill="#{r:02x}{g:02x}{b:02x}"/>'
+            )
+            pixels.append((x - x0 + pad, y - y0 + pad, (r, g, b, 255)))
+
+    (PUBLIC / "favicon.svg").write_text(
+        f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {vw} {vh}" '
+        f'shape-rendering="crispEdges">\n'
+        + "\n".join(rects)
+        + "\n</svg>\n"
+    )
+
+    def paint(scale):
+        img = Image.new("RGBA", (vw * scale, vh * scale), (0, 0, 0, 0))
+        px = img.load()
+        for x, y, color in pixels:
+            for dy in range(scale):
+                for dx in range(scale):
+                    px[x * scale + dx, y * scale + dy] = color
+        return square_canvas(img)
+
+    png = paint(2)
+    png.save(PUBLIC / "favicon.png", "PNG")
+    ico16, ico32, ico48 = paint(1), paint(2), paint(3)
+    ico32.save(
+        PUBLIC / "favicon.ico",
+        format="ICO",
+        append_images=[ico16, ico48],
+        sizes=[(16, 16), (32, 32), (48, 48)],
+    )
+    apple = paint(8).resize((180, 180), Image.NEAREST)
+    apple.save(PUBLIC / "apple-touch-icon.png", "PNG")
+    print(f"wrote favicon.svg {vw}x{vh}, favicon.png {png.size}, favicon.ico")
+
+
 def main():
     sprites = {
         "penny-happy.png": HAPPY,
@@ -200,6 +265,8 @@ def main():
     nut = crop_content(nut, pad=4)
     nut.save(OUT / "chestnut.png")
     print(f"wrote chestnut.png {nut.size}")
+
+    write_favicons(HAPPY)
 
 
 if __name__ == "__main__":
